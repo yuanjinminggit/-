@@ -1,6 +1,10 @@
 package com.leetcode.codereview.slidingwindow;
 
+import org.testng.annotations.Test;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class Zuixiaofugaizichuan {
@@ -81,8 +85,64 @@ public class Zuixiaofugaizichuan {
         return res;
     }
 
-//    public List<Integer> findSubstring(String s, String[] words) {
-//
-//    }
+    private String[] words;
+
+    public List<Integer> findSubstring(String s, String[] words) {
+        this.words = new String[words.length];
+        System.arraycopy(words, 0, this.words, 0, words.length);
+        int length = words[0].length();
+        HashSet<Integer> ans = new HashSet<>();
+        dfsfindSubstring(s, 0, words, length, ans);
+        return new ArrayList<>(ans);
+
+    }
+
+    private void dfsfindSubstring(String s, int idx, String[] words, int length, HashSet<Integer> ans) {
+        boolean b = Arrays.stream(words).allMatch(v -> v.equals(""));
+        if (b) {
+            // 答案走到这里添加了几次，取决于走到这里有多少个分支
+            ans.add(idx - words.length * length);
+            return;
+        }
+        if (idx + length - 1 >= s.length()) {
+            return;
+        }
+
+
+        String s1 = s.substring(idx, idx + length);
+        for (int i = 0; i < words.length; i++) {
+            if (words[i].equals(s1)) {
+                words[i] = "";
+                dfsfindSubstring(s, idx + length, words, length, ans);
+                words[i] = s1;
+            }
+        }
+        String[] newW = new String[words.length];
+        System.arraycopy(this.words, 0, newW, 0, words.length);
+        dfsfindSubstring(s, idx + 1, newW, length, ans);
+    }
+
+    public int characterReplacement(String s, int k) {
+        int[] freq = new int[128];
+
+        int left = 0;
+        int right = 0;
+        int count = 0;
+        while (right < s.length()) {
+            freq[s.charAt(right)]++;
+            count = Math.max(count, freq[s.charAt(right)]);
+            right++;
+            if (right - left > k + count) {
+                freq[s.charAt(left)]--;
+                left++;
+            }
+        }
+        return right - left;
+    }
+
+    @Test
+    public void test() {
+        findSubstring("barfoothefoobarman", new String[]{"foo", "bar"});
+    }
 
 }
