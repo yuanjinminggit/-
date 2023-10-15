@@ -3,8 +3,6 @@ package com.leetcode.codereview.sorttable.tree;
 
 import com.leetcode.codereview.sorttable.SortTable;
 
-import java.util.TreeMap;
-
 public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
     static class AVLNode<K extends Comparable<K>, V> {
         public K key;
@@ -30,6 +28,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         this.size = 0;
     }
 
+
     @Override
     public void put(K key, V value) {
         if (key == null) {
@@ -43,6 +42,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         root = add(root, key, value);
         size++;
     }
+
 
     private AVLNode<K, V> add(AVLNode<K, V> cur, K key, V value) {
         if (cur == null) {
@@ -59,6 +59,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         updateHeight(cur);
         return maintain(cur);
     }
+
 
     // 站在爷爷的角度调整父节点的高度，父节点以下是平衡的
     private AVLNode<K, V> maintain(AVLNode<K, V> cur) {
@@ -98,6 +99,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         return cur;
     }
 
+
     private AVLNode<K, V> leftRotate(AVLNode<K, V> cur) {
         AVLNode<K, V> right = cur.right;
         cur.right = right.left;
@@ -106,6 +108,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         updateHeight(right);
         return right;
     }
+
 
 
     private AVLNode<K, V> rightRotate(AVLNode<K, V> cur) {
@@ -117,12 +120,14 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         return left;
     }
 
+
     private void updateHeight(AVLNode<K, V> cur) {
         if (cur == null) {
             return;
         }
         cur.height = Math.max(cur.left == null ? 0 : cur.left.height, cur.right == null ? 0 : cur.right.height) + 1;
     }
+
 
     @Override
     public boolean containsKey(K key) {
@@ -148,6 +153,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         return null;
     }
 
+
     @Override
     public void remove(K key) {
         if (key == null) {
@@ -158,6 +164,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
             root = delete(root, key);
         }
     }
+
 
     private AVLNode<K, V> delete(AVLNode<K, V> cur, K key) {
         if (key.compareTo(cur.key) < 0) {
@@ -205,6 +212,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         return findNoSmall(key);
     }
 
+
     private K findNoSmall(K key) {
         AVLNode<K, V> cur = this.root;
         AVLNode<K, V> res = null;
@@ -222,6 +230,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
 
     }
 
+
     @Override
     public K firstKey() {
         if (root == null) {
@@ -233,6 +242,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         }
         return cur.key;
     }
+
 
     @Override
     public K lastKey() {
@@ -246,6 +256,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         return cur.key;
     }
 
+
     @Override
     public K floorKey(K key) {
         if (key == null) {
@@ -253,6 +264,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         }
         return findNoBig(key);
     }
+
 
     @Override
     public int size() {
@@ -275,10 +287,12 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         return res == null ? null : res.key;
     }
 
+
     public void print() {
         print(root);
 
     }
+
 
     private void print(AVLNode<K, V> root) {
         if (root == null) {
@@ -304,41 +318,5 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
         checkHeight(cur.right);
     }
 
-    public static void main(String[] args) {
-        AVL<Integer, Integer> avlTree = new AVL<Integer, Integer>();
-        TreeMap<Integer, Integer> map = new TreeMap<>();
-        int times = 100000;
-        int maxkey = 500;
-        int maxvalue = 1000000;
-        for (int i = 0; i < times; i++) {
-            int key = (int) (Math.random() * maxkey);
-            int val = (int) (Math.random() * maxvalue);
-            if (Math.random() > 0.1) {
-                avlTree.put(key, val);
-                map.put(key, val);
 
-            }
-
-
-//            if (Math.random() > 0.3 && avlTree.size > 0) {
-//                int floorKey = (int) (Math.random() * maxkey);
-//                Map<Integer, Integer> map1 = avlTree.rangeQuery(floorKey, floorKey + 100);
-//                System.out.println(map1);
-//            }
-        }
-        for (int i = 0; i < times; i++) {
-            if (Math.random() > 0.3 && avlTree.size > 0) {
-                int floorKey = (int) (Math.random() * maxkey);
-//                System.out.println("删除" + floorKey);
-//                map.remove(floorKey);
-//                avlTree.remove(floorKey);
-//                System.out.println(map.lastKey() + "=====" + avlTree.lastKey());
-            }
-        }
-//        System.out.println(avlTree.printAll());
-        avlTree.print();
-        System.out.println(map.size());
-        System.out.println(avlTree.size);
-        avlTree.checkHeight(avlTree.root);
-    }
 }
