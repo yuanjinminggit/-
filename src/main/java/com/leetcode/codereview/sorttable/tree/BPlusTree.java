@@ -485,6 +485,7 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             }
         }
 
+
         @Override
         protected void combine(BPlusTreeNode childNode, K parentKey) {
             BPlusTreeIndexNode brotherNode = (BPlusTreeIndexNode) childNode;
@@ -492,6 +493,7 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             this.keys.addAll(brotherNode.keys);
             this.children.addAll(brotherNode.children);
         }
+
 
         @Override
         public Map<K, V> rangeQuery(K start, K end) {
