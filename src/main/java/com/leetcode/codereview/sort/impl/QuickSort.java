@@ -185,7 +185,7 @@ public class QuickSort implements Sort {
     @Test
     public void test() {
         int[] ints = RandomArrayUtils.testGenerateRandomArray(0, 100000000, 1000000, this::sort);
-        RandomArrayUtils.print(ints);
+//        RandomArrayUtils.print(ints);
     }
 
 
