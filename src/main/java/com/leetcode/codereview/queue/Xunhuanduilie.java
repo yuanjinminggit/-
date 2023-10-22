@@ -1,7 +1,6 @@
 package com.leetcode.codereview.queue;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class Xunhuanduilie {
 
@@ -143,12 +142,178 @@ public class Xunhuanduilie {
 
         public int ping(int t) {
             queue.offer(t);
-            while (!queue.isEmpty()&&queue.peek()<t-3000){
+            while (!queue.isEmpty() && queue.peek() < t - 3000) {
                 queue.poll();
             }
             return queue.size();
         }
     }
 
+    public int findKthLargest2(int[] nums, int k) {
+        PriorityQueue<Integer> minheap = new PriorityQueue<>(k, Comparator.comparingInt(a -> a));
+        for (int i = 0; i < k; i++) {
+            minheap.offer(nums[i]);
+        }
+        for (int i = k; i < nums.length; i++) {
+            if (nums[i] > minheap.peek()) {
+                minheap.poll();
+                minheap.offer(nums[i]);
+            }
+        }
+        return minheap.peek();
+    }
 
+    public int findKthLargest(int[] nums, int k) {
+        int heapSize = nums.length;
+        buildMaxHeap(nums, heapSize);
+        for (int i = nums.length - 1; i >= nums.length + 1 - k; i--) {
+            swap(nums, 0, i);
+            maxHeapify(nums, 0, i);
+        }
+        return nums[0];
+    }
+
+    private void buildMaxHeap(int[] nums, int heapSize) {
+        for (int i = heapSize / 2; i >= 0; i--) {
+            maxHeapify(nums, i, heapSize);
+        }
+    }
+
+    private void maxHeapify(int[] nums, int idx, int heapSize) {
+        int l = 2 * idx + 1;
+        int r = l + 1;
+        int largest = l;
+
+        if (l >= heapSize) {
+            return;
+        }
+        if (r < heapSize && nums[r] > nums[l]) {
+            largest = r;
+        }
+        if (nums[idx] < nums[largest]) {
+            swap(nums, idx, largest);
+            maxHeapify(nums, largest, heapSize);
+        }
+    }
+
+    private void swap(int[] nums, int i, int j) {
+        if (i == j) {
+            return;
+        }
+        int a = nums[i];
+        nums[i] = nums[j];
+        nums[j] = a;
+    }
+
+
+    public int nthSuperUglyNumber1(int n, int[] primes) {
+        if (n == 1) {
+            return 1;
+        }
+        PriorityQueue<Long> queue = new PriorityQueue<>();
+        HashSet<Long> set = new HashSet<>();
+        set.add(1l);
+        queue.offer(1l);
+        int i = 0;
+        while (i++ < n) {
+            Long a = queue.poll();
+            for (int prime : primes) {
+                if (set.add(a * prime)) {
+                    queue.offer(a * prime);
+                }
+            }
+        }
+        return queue.poll().intValue();
+    }
+
+
+    public int nthSuperUglyNumber(int n, int[] primes) {
+        int pLen = primes.length;
+        int[] indexes = new int[pLen];
+        long[] dp = new long[n];
+        dp[0] = 1;
+        for (int i = 0; i < n; i++) {
+            dp[i] = Integer.MAX_VALUE;
+            for (int j = 0; j < pLen; j++) {
+                dp[i] = Math.min(dp[i], dp[indexes[j]] * primes[j]);
+            }
+            for (int j = 0; j < pLen; j++) {
+                if (dp[i] == dp[indexes[j]] * primes[j]) {
+                    indexes[j]++;
+                }
+            }
+        }
+        return (int) dp[n - 1];
+    }
+
+
+    public int[] topKFrequent1(int[] nums, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
+        }
+        int len = nums.length;
+        PriorityQueue<int[]> minHeap = new PriorityQueue<>(len, Comparator.comparingInt(o -> o[1]));
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            Integer num = entry.getKey();
+            Integer value = entry.getValue();
+            if (minHeap.size() < k) {
+                minHeap.offer(new int[]{num, value});
+            } else {
+                if (value > minHeap.peek()[1]) {
+                    minHeap.poll();
+                    minHeap.offer(new int[]{num, value});
+                }
+            }
+        }
+        int[] res = new int[k];
+        for (int i = 0; i < k; i++) {
+            res[i] = minHeap.poll()[0];
+        }
+        return res;
+    }
+
+    public int[] topKFrequent(int[] nums, int k) {
+        HashMap<Integer, Integer> freq = new HashMap<>();
+        for (int num : nums) {
+            freq.put(num, freq.getOrDefault(num, 0) + 1);
+        }
+        ArrayList<int[]> list = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : freq.entrySet()) {
+            list.add(new int[]{entry.getKey(), entry.getValue()});
+        }
+        int left = 0;
+        int right = list.size() - 1;
+        int target = k - 1;
+        while (left <= right) {
+            int pIndex = partition(list, left, right);
+            if (pIndex < target) {
+                left = pIndex + 1;
+            } else if (pIndex > target) {
+                right = pIndex - 1;
+            } else {
+                break;
+            }
+        }
+        int[] res = new int[k];
+        for (int i = 0; i < k; i++) {
+            res[i] = list.get(i)[0];
+        }
+        return res;
+    }
+
+    private int partition(ArrayList<int[]> list, int left, int right) {
+        int randomIndex = (int) (Math.random() * (right - left + 1) + left);
+        Collections.swap(list, randomIndex, left);
+        int pivot = list.get(left)[1];
+        int j = left;
+        for (int i = left + 1; i <= right; i++) {
+            if (list.get(i)[1] >= pivot) {
+                j++;
+                Collections.swap(list, i, j);
+            }
+        }
+        Collections.swap(list, left, j);
+        return j;
+    }
 }
