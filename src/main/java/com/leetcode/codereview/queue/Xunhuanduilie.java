@@ -316,4 +316,158 @@ public class Xunhuanduilie {
         Collections.swap(list, left, j);
         return j;
     }
+
+
+    public String frequencySort1(String s) {
+        int len = s.length();
+        if (len == 0) {
+            return s;
+        }
+        HashMap<Character, Integer> map = new HashMap<>();
+        for (char c : s.toCharArray()) {
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+        Comparator<Character> comparator = new Comparator<Character>() {
+            @Override
+            public int compare(Character o1, Character o2) {
+                if (map.get(o2).intValue() == map.get(o1).intValue()) {
+                    return o1.compareTo(o2);
+                }
+                return map.get(o2) - map.get(o1);
+            }
+        };
+        Character[] characters = new Character[len];
+        for (int i = 0; i < characters.length; i++) {
+            characters[i] = s.charAt(i);
+        }
+        Arrays.sort(characters, comparator);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < len; i++) {
+            sb.append(characters[i]);
+        }
+        return sb.toString();
+    }
+
+
+    public String frequencySort(String s) {
+        int len = s.length();
+        if (len == 0) {
+            return s;
+        }
+        HashMap<Character, Integer> map = new HashMap<>();
+        for (char c : s.toCharArray()) {
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+
+        PriorityQueue<int[]> heap = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        for (Map.Entry<Character, Integer> entry : map.entrySet()) {
+            heap.offer(new int[]{entry.getKey(), entry.getValue()});
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!heap.isEmpty()) {
+            int[] poll = heap.poll();
+            int c = poll[0];
+            int count = poll[1];
+            for (int i = 0; i < count; i++) {
+                sb.append((char) c);
+            }
+        }
+        return sb.toString();
+    }
+
+
+    class KthLargest {
+        private PriorityQueue<Integer> heap;
+        private int k;
+
+        public KthLargest(int k, int[] nums) {
+            this.k = k;
+            heap = new PriorityQueue<>(k);
+            for (int num : nums) {
+                add(num);
+            }
+        }
+
+        public int add(int val) {
+            heap.offer(val);
+            if (heap.size() > k) {
+                heap.poll();
+            }
+            return heap.peek();
+        }
+    }
+
+
+    public int[][] kClosest(int[][] points, int k) {
+        PriorityQueue<int[]> heap = new PriorityQueue<>((a, b) -> b[0] * b[0] + b[1] * b[1] - a[0] * a[0] - a[1] * a[1]);
+        for (int i = 0; i < k; i++) {
+            heap.offer(points[i]);
+        }
+        for (int i = k; i <= points.length; i++) {
+            int[] peek = heap.peek();
+            if (points[i][0] * points[i][0] + points[i][1] * points[i][1] < peek[0] * peek[0] + peek[1] * peek[1]) {
+                heap.poll();
+                heap.offer(points[i]);
+            }
+        }
+        int[][] res = new int[k][2];
+        for (int i = 0; i < k; i++) {
+            res[i] = heap.poll();
+        }
+        return res;
+    }
+
+
+    public int lastStoneWeight(int[] stones) {
+        if (stones.length == 1) {
+            return stones[0];
+        }
+        PriorityQueue<Integer> heap = new PriorityQueue<>(Comparator.reverseOrder());
+        for (int stone : stones) {
+            heap.offer(stone);
+        }
+        while (heap.size() >= 2) {
+            Integer first = heap.poll();
+            Integer second = heap.poll();
+            int i = first - second;
+            if (i == 0) {
+                continue;
+            }
+            heap.offer(i);
+        }
+        if (heap.isEmpty()) {
+            return 0;
+        }
+        return heap.peek();
+    }
+
+
+    public List<List<Integer>> groupThePeople(int[] groupSizes) {
+        int max = Arrays.stream(groupSizes).max().getAsInt();
+        List<Integer>[] buckets = new ArrayList[max + 1];
+        Arrays.setAll(buckets, a -> new ArrayList<Integer>());
+        for (int i = 0; i < groupSizes.length; i++) {
+            buckets[groupSizes[i]].add(i);
+        }
+        List<List<Integer>> ans = new ArrayList<>();
+        for (int i = 0; i < buckets.length; i++) {
+            if (buckets[i].isEmpty()) {
+                continue;
+            }
+            int tmp = buckets[i].size() / i;
+            int n = 0;
+            while (tmp-- > 0) {
+                List<Integer> list = new ArrayList<>();
+                for (int j = 0; j < i; j++) {
+                    list.add(buckets[i].get(n++));
+                }
+                ans.add(list);
+            }
+        }
+        return ans;
+    }
+
+
+
+
 }
