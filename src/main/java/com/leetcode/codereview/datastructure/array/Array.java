@@ -94,6 +94,13 @@ public class Array<E> {
         return remove(0);
     }
 
+    public E getLast() {
+        return get(size - 1);
+    }
+    public E  getfirst(){
+        return get(0);
+    }
+
     public E removeLast() {
         return remove(size - 1);
     }
@@ -120,11 +127,17 @@ public class Array<E> {
         return sb.toString();
     }
 
-    E get(int index) {
+    public void swap(int i,int j){
+        E t = data[i];
+        data[i] = data[j];
+        data[j] = t;
+    }
+
+    public E get(int index) {
         return data[index];
     }
 
-    void set(int index, E e) {
+    public void set(int index, E e) {
         data[index] = e;
     }
 
