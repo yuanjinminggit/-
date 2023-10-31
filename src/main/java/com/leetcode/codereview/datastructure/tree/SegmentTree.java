@@ -2,6 +2,9 @@ package com.leetcode.codereview.datastructure.tree;
 
 import com.leetcode.codereview.datastructure.Merger;
 
+/*
+ * 线段树
+ * */
 public class SegmentTree<E> {
     private E[] data;
     private E[] tree;
@@ -110,7 +113,6 @@ public class SegmentTree<E> {
                 break;
             }
             sb.append(",");
-
         }
         sb.append(']');
         return sb.toString();

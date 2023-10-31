@@ -133,7 +133,7 @@ public class BST<E extends Comparable<E>> {
         while (cur.left != null) {
             cur = cur.left;
         }
-        return cur.left;
+        return cur;
     }
 
 

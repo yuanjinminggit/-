@@ -2,6 +2,7 @@ package com.leetcode.codereview.tree;
 
 import com.leetcode.codereview.simpleConstruct.TreeNode;
 
+
 import java.util.*;
 
 public class Xiangtongdeshu {
@@ -517,5 +518,94 @@ public class Xiangtongdeshu {
         root.right = null;
         return left;
     }
+
+    public class Codec {
+        public String serialize(TreeNode root) {
+            if (root == null) {
+                return "";
+            }
+            StringBuilder sb = new StringBuilder();
+            serialize(root, sb);
+            return sb.toString();
+        }
+
+        private void serialize(TreeNode root, StringBuilder sb) {
+            if (root == null) {
+                sb.append("null,");
+                return;
+            }
+            sb.append(root.val + ",");
+            serialize(root.left, sb);
+            serialize(root.right, sb);
+        }
+
+
+        public TreeNode deserialize(String data) {
+            if (data.equals("")) {
+                return null;
+            }
+            String[] array = data.split(",");
+            return deserialize(new LinkedList<String>(Arrays.asList(array)));
+        }
+
+        private TreeNode deserialize(LinkedList<String> data) {
+            System.out.println(data);
+            if (data.isEmpty()) {
+                return null;
+            }
+            String poll = data.poll();
+            if (poll.equals("null")) {
+                return null;
+            }
+            int val = Integer.parseInt(poll);
+            TreeNode root = new TreeNode(val);
+            root.left = deserialize(data);
+            root.right = deserialize(data);
+            return root;
+        }
+    }
+
+
+    public int[] smallestMissingValueSubtree(int[] parents, int[] nums) {
+        int n = parents.length;
+        int[] ans = new int[n];
+        Arrays.fill(ans, 1);
+        int node = -1;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == 1) {
+                node = i;
+                break;
+            }
+        }
+        if (node < 0) {
+            return ans;
+        }
+        List<Integer>[] g = new ArrayList[n];
+        Arrays.setAll(g, e -> new ArrayList());
+        for (int i = 1; i < n; i++) {
+            g[parents[i]].add(i);
+        }
+        HashSet<Integer> vis = new HashSet<>();
+        int mex = 2;
+        while (node >= 0) {
+            dfs(node, g, vis, nums);
+            while (vis.contains(mex)) {
+                mex++;
+            }
+            ans[node] = mex;
+            node = parents[node];
+        }
+        return ans;
+    }
+
+    private void dfs(int x, List<Integer>[] g, HashSet<Integer> vis, int[] nums) {
+        vis.add(nums[x]);
+        for (Integer son : g[x]) {
+            if (!vis.contains(nums[son])) {
+                dfs(son, g, vis, nums);
+            }
+        }
+    }
+
 
 }
