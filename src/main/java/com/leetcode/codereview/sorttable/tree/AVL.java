@@ -88,7 +88,7 @@ public class AVL<K extends Comparable<K>, V> implements SortTable<K, V> {
             int rightleftHeight = cur.right != null && cur.right.left != null ? cur.right.left.height : 0;
             int rightrightHeight = cur.right != null && cur.right.right != null ? cur.right.right.height : 0;
             if (rightrightHeight >= rightleftHeight) {
-                //R
+                //RR
                 cur = leftRotate(cur);
             } else {
                 //RL
