@@ -3,24 +3,29 @@ package com.leetcode.codereview.datastructure.tree;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-public class AVLTree<K extends Comparable<K>, V> {
+public class RBTree<K extends Comparable<K>, V> {
+    private static final boolean RED = true;
+    private static final boolean BLACK = false;
+
     private class Node {
         public K key;
         public V value;
         public Node left, right;
         public int height;
+        public boolean color;
 
         public Node(K k, V v) {
             this.key = k;
             this.value = v;
             height = 1;
+            color = RED;
         }
     }
 
     private Node root;
     private int size;
 
-    public AVLTree() {
+    public RBTree() {
         root = null;
         size = 0;
     }
@@ -35,6 +40,7 @@ public class AVLTree<K extends Comparable<K>, V> {
 
     public void add(K k, V v) {
         root = add(root, k, v);
+        root.color = RED;
     }
 
     private int getHeight(Node node) {
@@ -74,44 +80,46 @@ public class AVLTree<K extends Comparable<K>, V> {
         } else {
             node.value = value;
         }
-        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
-        int balanceFactor = getBalanceFactor(node);
-        if (Math.abs(balanceFactor) > 1) {
-            if (balanceFactor > 1 && getBalanceFactor(node.left) >= 0) {
-                return rightRotate(node);
-            }
-            if (balanceFactor < -1 && getBalanceFactor(node.right) <= 0) {
-                return leftRotate(node);
-            }
-            if (balanceFactor > 1 && getBalanceFactor(node.left) < 0) {
-                node.left = leftRotate(node.left);
-                return rightRotate(node);
-            }
-
-            if (balanceFactor < -1 && getBalanceFactor(node.right) > 0) {
-                node.right = rightRotate(node.right);
-                return leftRotate(node);
-            }
+        if (isRed(node.right) && !isRed(node.left)) {
+            node = leftRotate(node);
+        }
+        if (isRed(node.left) && isRed(node.left.left)) {
+            node = rightRotate(node);
+        }
+        if (isRed(node.left)&&isRed(node.right)){
+            flipColors(node);
         }
         return node;
+    }
+
+    private boolean isRed(Node node) {
+        if (node == null) {
+            return false;
+        }
+        return node.color == RED;
     }
 
     private Node leftRotate(Node node) {
         Node right = node.right;
         node.right = right.left;
         right.left = node;
-        node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
-        right.height = Math.max(getHeight(right.left), getHeight(right.right)) + 1;
+        right.color = node.color;
+        node.color = RED;
         return right;
+    }
+
+    private void flipColors(Node node) {
+        node.color = RED;
+        node.left.color = BLACK;
+        node.right.color = BLACK;
     }
 
     private Node rightRotate(Node node) {
         Node left = node.left;
         node.left = left.right;
         left.right = node;
-
-        node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
-        left.height = Math.max(getHeight(left.left), getHeight(left.right)) + 1;
+        left.color = node.color;
+        node.color = RED;
         return left;
     }
 
@@ -272,7 +280,7 @@ public class AVLTree<K extends Comparable<K>, V> {
     }
 
     public static void main(String[] args) {
-        AVLTree<Integer, Integer> avlTree = new AVLTree<Integer, Integer>();
+        RBTree<Integer, Integer> avlTree = new RBTree<Integer, Integer>();
         TreeMap<Integer, Integer> map = new TreeMap<>();
         int times = 1000;
         int maxkey = 10000;
@@ -303,7 +311,7 @@ public class AVLTree<K extends Comparable<K>, V> {
         System.out.println(avlTree.isBalanced());
         System.out.println(avlTree.isBST());
 
-        System.out.println(avlTree.size==map.size());
+        System.out.println(avlTree.size == map.size());
     }
 
 }
