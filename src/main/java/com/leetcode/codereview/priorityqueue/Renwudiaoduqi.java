@@ -1,4 +1,4 @@
-package com.leetcode.codereview.queue;
+package com.leetcode.codereview.priorityqueue;
 
 import org.testng.annotations.Test;
 
@@ -157,6 +157,23 @@ public class Renwudiaoduqi {
             }
             return (queMin.peek() + queMax.peek()) / 2.0;
         }
+    }
+
+    public int scheduleCourse(int[][] courses) {
+        Arrays.sort(courses, (a, b) -> a[1] - b[1]);
+        PriorityQueue<Integer> heap = new PriorityQueue<>(Comparator.reverseOrder());
+        int day = 0;
+        for (int[] c : courses) {
+            int duration = c[0], lastDay = c[1];
+            if (day + duration <= lastDay) {
+                day += duration;
+                heap.offer(duration);
+            } else if (!heap.isEmpty() && duration < heap.peek()) {
+                day -= heap.poll() - duration;
+                heap.offer(duration);
+            }
+        }
+        return heap.size();
     }
 
 

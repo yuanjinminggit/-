@@ -1,6 +1,9 @@
 package com.leetcode.codereview.memoizeddfs;
 
+import com.leetcode.codereview.simpleConstruct.TreeNode;
+
 import java.util.Arrays;
+import java.util.LinkedList;
 
 public class zhiguzi {
 
@@ -136,7 +139,6 @@ public class zhiguzi {
         return f[n];
     }
 
-    private int[][] mem;
 
     public int maxSatisfaction1(int[] satisfaction) {
         int n = satisfaction.length;
@@ -223,5 +225,90 @@ public class zhiguzi {
                 dfsmaxProfit(prices, index - 1, k, 1));
     }
 
+    private int[][] mem;
+
+
+    private int cache[];
+
+    public int rob1(int[] nums) {
+        int n = nums.length;
+        cache = new int[n];
+        Arrays.fill(cache, -1);
+        return dfsrob1(n - 1, nums);
+    }
+
+    private int dfsrob1(int i, int[] nums) {
+        if (i < 0) {
+            return 0;
+        }
+        if (cache[i] != -1) {
+            return cache[i];
+        }
+        return cache[i] = Math.max(dfsrob1(i - 2, nums) + nums[i], dfsrob1(i - 1, nums));
+    }
+
+    public int rob(TreeNode root) {
+        int[] rs = dfsrob(root);
+        return Math.max(rs[0], rs[1]);
+    }
+
+    private int[] dfsrob(TreeNode root) {
+        if (root == null) {
+            return new int[]{0, 0};
+        }
+        int[] left = dfsrob(root.left);
+        int[] right = dfsrob(root.right);
+        int rob = root.val + left[0] + right[0];
+        int noRob = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
+        return new int[]{noRob, rob};
+    }
+
+    private int[][] directions = new int[][]{{-1, -2}, {-2, -1}, {-2, 1}, {-1, 2}, {1, -2}, {2, -1}, {2, 1}, {1, 2}};
+
+    public boolean checkValidGrid1(int[][] grid) {
+        int n = grid.length, tg = 1;
+        LinkedList<int[]> queue = new LinkedList<>();
+        if (grid[0][0] == 0) {
+            queue.offer(new int[]{0, 0});
+        }
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            for (int[] direction : directions) {
+                int newx = direction[0] + cur[0];
+                int newy = direction[1] + cur[1];
+                if (newx < 0 || newx >= grid.length || newy < 0 || newy >= grid[0].length || tg != grid[newx][newy]) {
+                    continue;
+                }
+                queue.offer(new int[]{newx, newy});
+                tg++;
+            }
+        }
+        return tg == n * n;
+    }
+
+     public boolean checkValidGrid(int[][] grid) {
+         return dfscheckValidGrid(grid, 0, 0, 0, 0);
+     }
+
+     private boolean dfscheckValidGrid(int[][] grid, int x, int y, int sum, int cur) {
+         if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length  || cur != grid[x][y]) {
+             return false;
+         }
+         sum++;
+         if (sum == grid.length * grid[0].length) {
+             return true;
+         }
+
+         for (int[] direction : directions) {
+             int newx = direction[0] + x;
+             int newy = direction[1] + y;
+             if (dfscheckValidGrid(grid, newx, newy, sum, cur + 1)) {
+                 return true;
+             }
+         }
+
+         return false;
+     }
 
 }
+

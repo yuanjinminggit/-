@@ -243,4 +243,29 @@ public class Xuanzhuanpaixushuzu {
         }
         return l;
     }
+
+    public long repairCars(int[] ranks, int cars) {
+        int min = Integer.MAX_VALUE;
+        for (int rank : ranks) {
+            min = Math.min(rank, min);
+        }
+        long left = 0, right = min * cars * cars;
+        while (left < right) {
+            long mid = left + (right - left) / 2;
+            if (check(mid, ranks, cars)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return right;
+    }
+
+    private boolean check(long mid, int[] ranks, int cars) {
+        int sum = 0;
+        for (int rank : ranks) {
+            sum += Math.sqrt(mid / rank);
+        }
+        return sum >= cars;
+    }
 }

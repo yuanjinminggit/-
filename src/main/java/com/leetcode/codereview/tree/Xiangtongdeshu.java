@@ -1,7 +1,7 @@
 package com.leetcode.codereview.tree;
 
 import com.leetcode.codereview.simpleConstruct.TreeNode;
-
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -605,6 +605,150 @@ public class Xiangtongdeshu {
                 dfs(son, g, vis, nums);
             }
         }
+    }
+
+
+    public TreeNode lcaDeepestLeaves1(TreeNode root) {
+        TreeNode[] fa = new TreeNode[1001];
+        LinkedList<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        boolean isCanNext = root.left != null && root.right != null;
+        while (isCanNext) {
+            int size = queue.size();
+            isCanNext = false;
+            while (size-- > 0) {
+                TreeNode node = queue.poll();
+                if (node.left != null) {
+                    fa[node.left.val] = node;
+                    queue.offer(node.left);
+                    isCanNext |= node.left.left != null || node.left.right != null;
+                }
+                if (node.right != null) {
+                    fa[node.right.val] = node;
+                    queue.offer(node.right);
+                    isCanNext |= node.right.left != null || node.right.right != null;
+                }
+            }
+        }
+
+        while (queue.size() > 1) {
+            int size = queue.size();
+            while (size-- > 0) {
+                TreeNode node = queue.poll();
+                if (fa[node.val] != queue.peekLast()) {
+                    queue.offer(fa[node.val]);
+                }
+            }
+        }
+        return queue.peek();
+    }
+
+
+    public TreeNode lcaDeepestLeaves2(TreeNode root) {
+        dfslcaDeepestLeaves(root, 0);
+        return res;
+    }
+
+    int maxDepth = 0;
+    TreeNode res;
+
+    private int dfslcaDeepestLeaves(TreeNode root, int level) {
+        if (root == null) {
+            maxDepth = Math.max(level, maxDepth);
+            return level;
+        }
+        int left = dfslcaDeepestLeaves(root.left, level + 1);
+        int right = dfslcaDeepestLeaves(root.right, level + 1);
+        if (left == right && right == maxDepth) {
+            res = root;
+        }
+        return Math.max(left, right);
+    }
+
+
+    public TreeNode lcaDeepestLeaves(TreeNode root) {
+        return dfs(root).getValue();
+    }
+
+    private Pair<Integer, TreeNode> dfs(TreeNode root) {
+        if (root == null) {
+            return new Pair<>(0, null);
+        }
+        Pair<Integer, TreeNode> left = dfs(root.left);
+        Pair<Integer, TreeNode> right = dfs(root.right);
+        if (left.getKey() > right.getKey()) {
+            return new Pair<>(left.getKey() + 1, left.getValue());
+        }
+
+        if (left.getKey() < right.getKey()) {
+            return new Pair<>(right.getKey() + 1, right.getValue());
+        }
+        return new Pair<>(left.getKey() + 1, root);
+    }
+
+    private final int LIMIT = 8000;
+    Long[][] memo = new Long[LIMIT + 1][2];
+    boolean[][] visited = new boolean[LIMIT + 1][2];
+
+    public int minimumJumps(int[] forbidden, int a, int b, int x) {
+        HashSet<Integer> forbid = new HashSet<>(forbidden.length);
+        for (int i : forbidden) {
+            forbid.add(i);
+        }
+        Long result = helper(0, x, forbid, a, b, 0);
+        return result == Integer.MAX_VALUE ? -1 : result.intValue();
+    }
+
+    private Long helper(int cur, int target, HashSet<Integer> forbid, int a, int b, int back) {
+        if (cur == target) {
+            return 0l;
+        }
+        visited[cur][back] = true;
+        long result = Integer.MAX_VALUE;
+        if (cur + a <= LIMIT && !forbid.contains(cur + a) && !visited[cur + a][0]) {
+            result = Math.min(result, 1 + helper(cur + a, target, forbid, a, b, 0));
+        }
+        if (cur - b >= 0 && back < 1 && !forbid.contains(cur - b) && !visited[cur - b][1]) {
+            result = Math.min(result, 1 + helper(cur - b, target, forbid, a, b, 1));
+        }
+        return memo[cur][back] = result;
+    }
+
+
+    private int[] arr;
+    private long[] mem;
+    private Map<Integer, Integer> map;
+    private int MOD = (int) 1e9 + 7;
+
+    public int numFactoredBinaryTrees(int[] arr) {
+        Arrays.sort(arr);
+        int n = arr.length;
+        map = new HashMap<Integer, Integer>();
+        this.arr = arr;
+        mem = new long[n];
+        Arrays.fill(mem, -1l);
+
+        long res = 0l;
+        for (int i = 0; i < n; i++) {
+            map.put(arr[i], i);
+        }
+        for (int i = 0; i < n; i++) {
+            res = (res + dfsnumFactoredBinaryTrees(i)) % MOD;
+        }
+        return (int) (res % MOD);
+    }
+
+    private long dfsnumFactoredBinaryTrees(int i) {
+        if (mem[i] != -1) {
+            return mem[i];
+        }
+        long res = 1l;
+        for (int j = 0; j < i; j++) {
+            if (arr[i] % arr[j] == 0 && map.containsKey(arr[i] / arr[j])) {
+                res = (res + dfsnumFactoredBinaryTrees(j) * dfsnumFactoredBinaryTrees(map.get(arr[i] / arr[j])) % MOD) % MOD;
+            }
+        }
+        return mem[i] = res;
     }
 
 
