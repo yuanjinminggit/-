@@ -303,7 +303,8 @@ public class AVLTree<K extends Comparable<K>, V> {
         System.out.println(avlTree.isBalanced());
         System.out.println(avlTree.isBST());
 
-        System.out.println(avlTree.size==map.size());
+        System.out.println(avlTree.size == map.size());
     }
+
 
 }

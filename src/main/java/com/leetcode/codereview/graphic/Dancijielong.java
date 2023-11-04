@@ -253,4 +253,102 @@ public class Dancijielong {
         }
         return ans == Integer.MAX_VALUE ? -1 : ans;
     }
+
+    class Node {
+        public int val;
+        public List<Node> neighbors;
+
+        public Node() {
+            val = 0;
+            neighbors = new ArrayList<Node>();
+        }
+
+        public Node(int _val) {
+            val = _val;
+            neighbors = new ArrayList<Node>();
+        }
+
+        public Node(int _val, ArrayList<Node> _neighbors) {
+            val = _val;
+            neighbors = _neighbors;
+        }
+    }
+
+    private HashMap<Node, Node> visited = new HashMap<>();
+
+    public Node cloneGraph1(Node node) {
+        if (node == null) {
+            return node;
+        }
+        if (visited.containsKey(node)) {
+            return visited.get(node);
+        }
+        Node cloneNode = new Node(node.val, new ArrayList<>());
+        visited.put(node, cloneNode);
+        for (Node neighbor : node.neighbors) {
+            cloneNode.neighbors.add(cloneGraph1(neighbor));
+        }
+        return cloneNode;
+    }
+
+    public Node cloneGraph(Node node) {
+        if (node == null) {
+            return node;
+        }
+        HashMap<Node, Node> visited = new HashMap<>();
+        LinkedList<Node> queue = new LinkedList<>();
+        queue.offer(node);
+        visited.put(node, new Node(node.val, new ArrayList<>()));
+        while (!queue.isEmpty()) {
+            Node n = queue.poll();
+            for (Node neighbor : n.neighbors) {
+                if (!visited.containsKey(neighbor)) {
+                    visited.put(neighbor, new Node(neighbor.val, new ArrayList<>()));
+                    queue.offer(neighbor);
+                }
+                visited.get(n).neighbors.add(visited.get(neighbor));
+            }
+        }
+        return visited.get(node);
+    }
+
+
+    public int canCompleteCircuit1(int[] gas, int[] cost) {
+        int n = cost.length;
+        for (int i = 0; i < n; i++) {
+            if (gas[i] > cost[i]) {
+                if (canCompleteCircuit(i, gas, cost)) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private boolean canCompleteCircuit(int i, int[] gas, int[] cost) {
+        int n = cost.length;
+        int sum = gas[i] - cost[i];
+        for (int j = (i + 1) % n; j != i; j = (j + 1) % n) {
+            sum += gas[j] - cost[j];
+            if (sum < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int len = gas.length;
+        int spare = 0;
+        int minSpare = Integer.MAX_VALUE;
+        int minIndex = 0;
+        for (int i = 0; i < len; i++) {
+            spare += gas[i] - cost[i];
+            if (spare < minSpare && gas[(i + 1) % len] > 0) {
+                minSpare = spare;
+                minIndex = i;
+            }
+        }
+        return spare < 0 ? -1 : (minIndex + 1) % len;
+    }
 }
