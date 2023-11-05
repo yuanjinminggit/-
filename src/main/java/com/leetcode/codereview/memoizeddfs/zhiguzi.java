@@ -286,6 +286,7 @@ public class zhiguzi {
         return tg == n * n;
     }
 
+
      public boolean checkValidGrid(int[][] grid) {
          return dfscheckValidGrid(grid, 0, 0, 0, 0);
      }
@@ -311,6 +312,32 @@ public class zhiguzi {
      }
 
 
+
+    private int [] stones;
+    private int sum;
+    public int lastStoneWeightII(int[] stones) {
+        int sum = Arrays.stream(stones).sum();
+        int n = stones.length;
+        this.stones = stones;
+        this.sum = sum;
+        mem = new int[n][sum + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(mem[i], -1);
+        }
+        return dfslastStoneWeightII(n - 1, 0);
+    }
+
+    private int dfslastStoneWeightII(int i, int cur) {
+        if (i < 0) {
+            return Math.abs(sum - 2 * cur);
+        }
+        if (mem[i][cur] != -1) {
+            return mem[i][cur];
+        }
+        int r1 = dfslastStoneWeightII(i - 1, cur);
+        int r2 = dfslastStoneWeightII(i - 1, cur + stones[i]);
+        return mem[i][cur] = Math.min(r1, r2);
+    }
 
 
 }
