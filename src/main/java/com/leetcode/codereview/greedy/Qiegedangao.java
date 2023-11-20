@@ -1,8 +1,8 @@
 package com.leetcode.codereview.greedy;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import org.testng.annotations.Test;
+
+import java.util.*;
 
 public class Qiegedangao {
     public int maxArea(int h, int w, int[] ho, int[] ve) {
@@ -174,6 +174,90 @@ public class Qiegedangao {
 
     public boolean haveConflict(String[] event1, String[] event2) {
         return event1[1].compareTo(event2[0]) < 0 || event2[1].compareTo(event1[0]) < 0;
+    }
+
+    public int maxProduct(String[] words) {
+        HashSet<Character> set = new HashSet<Character>();
+        int max = 0;
+        for (int i = 0; i < words.length; i++) {
+            set.clear();
+            for (int k = 0; k < words[i].length(); k++) {
+                set.add(words[i].charAt(k));
+            }
+            int l = words[i].length();
+
+            for (int j = i + 1; j < words.length; j++) {
+                boolean flag = false;
+                for (int k = 0; k < words[j].length(); k++) {
+                    if (set.contains(words[j].charAt(k))) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag) {
+                    max = Math.max(l * words[j].length(), max);
+                }
+                System.out.println(max);
+            }
+        }
+        return max;
+    }
+
+
+    public List<String> findRepeatedDnaSequences(String s) {
+        HashMap<String, Integer> map = new HashMap<>();
+        ArrayList<String> res = new ArrayList<>();
+        for (int i = 10; i < s.length(); i++) {
+            String tmp = s.substring(i - 10, i);
+            System.out.println(tmp.length());
+            map.put(tmp, map.getOrDefault(tmp, 0) + 1);
+            if (map.get(tmp) == 2) {
+                res.add(tmp);
+            }
+        }
+        return res;
+    }
+
+    public int findTheLongestBalancedSubstring(String s) {
+        if (s.length() == 0) {
+            return 0;
+        }
+        int len = 0;
+        int maxLen = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '0') {
+                len++;
+            } else {
+                int tmpLen = 0;
+                while (i < s.length() && s.charAt(i) == '1') {
+                    i++;
+                    tmpLen++;
+                }
+                maxLen = Math.max(Math.min(tmpLen, len)*2, maxLen);
+                len = 0;
+                i--;
+            }
+        }
+        return maxLen;
+    }
+
+
+    public int vowelStrings(String[] words, int left, int right) {
+        int len = 0;
+        for (int i = left; i < right; i++) {
+            int length = words[i].length();
+            if ((words[i].charAt(0) == 'a' || words[i].charAt(0) == 'e' || words[i].charAt(0) == 'i' || words[i].charAt(0) == 'o' || words[i].charAt(0) == 'u') && (
+                    words[i].charAt(length - 1) == 'a' || words[i].charAt(length - 1) == 'e' || words[i].charAt(length - 1) == 'i' || words[i].charAt(length - 1) == 'o' || words[i].charAt(length - 1) == 'u')
+            ) {
+                len++;
+            }
+        }
+        return len;
+    }
+
+    @Test
+    public void test() {
+        maxProduct(new String[]{"abcw", "baz", "foo", "bar", "xtfn", "abcdef"});
     }
 
 

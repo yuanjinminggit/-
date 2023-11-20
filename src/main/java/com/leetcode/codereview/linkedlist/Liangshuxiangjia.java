@@ -292,7 +292,6 @@ public class Liangshuxiangjia {
 
     private ListNode insertionSortList(ListNode head, ListNode cur, ListNode newHead) {
         if (cur == null) {
-            System.out.println(head.val);
             return head;
         }
         ListNode dummy = new ListNode(-1);
