@@ -3,6 +3,7 @@ package com.leetcode.codereview.memoizeddfs;
 import com.leetcode.codereview.simpleConstruct.TreeNode;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class zhiguzi {
@@ -228,8 +229,6 @@ public class zhiguzi {
     private int[][] mem;
 
 
-    private int cache[];
-
     public int rob1(int[] nums) {
         int n = nums.length;
         cache = new int[n];
@@ -287,34 +286,34 @@ public class zhiguzi {
     }
 
 
-     public boolean checkValidGrid(int[][] grid) {
-         return dfscheckValidGrid(grid, 0, 0, 0, 0);
-     }
+    public boolean checkValidGrid(int[][] grid) {
+        return dfscheckValidGrid(grid, 0, 0, 0, 0);
+    }
 
-     private boolean dfscheckValidGrid(int[][] grid, int x, int y, int sum, int cur) {
-         if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length  || cur != grid[x][y]) {
-             return false;
-         }
-         sum++;
-         if (sum == grid.length * grid[0].length) {
-             return true;
-         }
+    private boolean dfscheckValidGrid(int[][] grid, int x, int y, int sum, int cur) {
+        if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length || cur != grid[x][y]) {
+            return false;
+        }
+        sum++;
+        if (sum == grid.length * grid[0].length) {
+            return true;
+        }
 
-         for (int[] direction : directions) {
-             int newx = direction[0] + x;
-             int newy = direction[1] + y;
-             if (dfscheckValidGrid(grid, newx, newy, sum, cur + 1)) {
-                 return true;
-             }
-         }
+        for (int[] direction : directions) {
+            int newx = direction[0] + x;
+            int newy = direction[1] + y;
+            if (dfscheckValidGrid(grid, newx, newy, sum, cur + 1)) {
+                return true;
+            }
+        }
 
-         return false;
-     }
+        return false;
+    }
 
 
-
-    private int [] stones;
+    private int[] stones;
     private int sum;
+
     public int lastStoneWeightII(int[] stones) {
         int sum = Arrays.stream(stones).sum();
         int n = stones.length;
@@ -338,6 +337,147 @@ public class zhiguzi {
         int r2 = dfslastStoneWeightII(i - 1, cur + stones[i]);
         return mem[i][cur] = Math.min(r1, r2);
     }
+
+
+    public int maxSubArray(int[] nums) {
+        int len = nums.length;
+        int max = Integer.MIN_VALUE;
+        cache = new int[len];
+        Arrays.fill(cache, -1);
+        for (int i = 0; i < len; i++) {
+            max = Math.max(max, dfsmaxSubArray(nums, i));
+        }
+        return max;
+    }
+
+
+    private int dfsmaxSubArray(int[] nums, int idx) {
+        if (idx == -1) {
+            return 0;
+        }
+        if (cache[idx] != -1) {
+            return cache[idx];
+        }
+
+        int num = dfsmaxSubArray(nums, idx - 1);
+        return cache[idx] = num < 0 ? nums[idx] : num + nums[idx];
+    }
+
+
+    public int lengthOfLIS(int[] nums) {
+        int len = nums.length;
+        cache = new int[len];
+        Arrays.fill(cache, -1);
+        int max = 1;
+        for (int i = 0; i < len; i++) {
+            max = Math.max(dfslengthOfLIS(nums, i), max);
+        }
+        return max;
+    }
+
+    private int dfslengthOfLIS(int[] nums, int i) {
+        if (i < 0) {
+            return 0;
+        }
+        int max = 0;
+        if (cache[i] != -1) {
+            return cache[i];
+        }
+        for (int j = 0; j < i; j++) {
+            if (nums[i] > nums[j]) {
+                max = Math.max(max, dfslengthOfLIS(nums, j));
+            }
+        }
+        return cache[i] = max + 1;
+    }
+
+
+    public int maximumCostSubstring(String s, String chars, int[] vals) {
+
+        HashMap<Character, Integer> map = new HashMap<>();
+        char[] charArray = chars.toCharArray();
+        for (int i = 0; i < charArray.length; i++) {
+            int val = vals[i];
+            map.put(charArray[i], val);
+        }
+
+        int length = s.length();
+        cache = new int[length];
+        Arrays.fill(cache, -1);
+        int max = 0;
+        for (int i = 0; i < length; i++) {
+            max = Math.max(max, dfsmaximumCostSubstring(s, map, i));
+        }
+        return max;
+    }
+
+    private int cache[];
+
+    private int dfsmaximumCostSubstring(String s, HashMap<Character, Integer> map, int i) {
+        if (i < 0) {
+            return 0;
+        }
+        if (cache[i] != -1) {
+            return cache[i];
+        }
+        int val = 0;
+        char key = s.charAt(i);
+        if (map.containsKey(key)) {
+            val = map.get(key);
+        } else {
+            val = key - 'a' + 1;
+        }
+        int pre = dfsmaximumCostSubstring(s, map, i - 1);
+        return cache[i] = pre < 0 ? Math.max(0, val) : Math.max(pre + val, 0);
+    }
+
+
+    public int maxSubarraySumCircular1(int[] nums) {
+        int len = nums.length;
+        int[] array = new int[2 * len];
+        System.arraycopy(nums, 0, array, 0, len);
+        System.arraycopy(nums, 0, array, len, len);
+        for (int i = 0; i < 2 * len; i++) {
+            System.out.println(array[i]);
+        }
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < 2 * len; i++) {
+            max = Math.max(max, dfsmaxSubarraySumCircular(array, i, len)[0]);
+        }
+        return max;
+    }
+
+    private int[] dfsmaxSubarraySumCircular(int[] nums, int idx, int len) {
+        if (idx < 0) {
+            return new int[]{0, 0};
+        }
+        int[] ints = dfsmaxSubarraySumCircular(nums, idx - 1, len);
+        int sum = ints[0];
+        int subLen = ints[1];
+        if (sum > 0) {
+            if (subLen + 1 <= len) {
+                return new int[]{sum + nums[idx], subLen + 1};
+            } else {
+                return new int[]{Math.max(sum - nums[idx - subLen], 0) + nums[idx], len};
+            }
+        }
+        return new int[]{nums[idx], 1};
+    }
+
+    public int maxSubarraySumCircular(int[] nums) {
+        int maxS = Integer.MIN_VALUE;
+        int minS = 0;
+        int maxF = 0, minF = 0, sum = 0;
+        for (int x : nums) {
+            maxF = Math.max(maxF, 0) + x;
+            maxS = Math.max(maxS, maxF);
+            minF = Math.min(minF, 0) + x;
+            minS = Math.min(minS, minF);
+            sum += x;
+        }
+        return sum == minS ? maxS : Math.max(maxS, sum - minS);
+    }
+
 
 }
 

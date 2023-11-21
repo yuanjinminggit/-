@@ -45,7 +45,7 @@ public class SegmentTree<E> {
     }
 
     private E query(int treeIndex, int l, int r, int queryL, int queryR) {
-        if (l == queryL && r == queryR) {
+        if (l >= queryL && r <= queryR) {
             return tree[treeIndex];
         }
         int mid = l + (r - l) / 2;

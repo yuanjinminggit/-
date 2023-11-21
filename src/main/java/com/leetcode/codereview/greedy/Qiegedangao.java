@@ -233,7 +233,7 @@ public class Qiegedangao {
                     i++;
                     tmpLen++;
                 }
-                maxLen = Math.max(Math.min(tmpLen, len)*2, maxLen);
+                maxLen = Math.max(Math.min(tmpLen, len) * 2, maxLen);
                 len = 0;
                 i--;
             }
@@ -255,9 +255,90 @@ public class Qiegedangao {
         return len;
     }
 
+    public int minDeletion(int[] nums) {
+        int n = nums.length, cnt = 0;
+        for (int i = 0; i < n; i++) {
+            if ((i - cnt) % 2 == 0 && i + 1 < n && nums[i] == nums[i + 1]) {
+                cnt++;
+            }
+        }
+        return (n - cnt) % 2 != 0 ? cnt + 1 : cnt;
+    }
+
+
+    public int[] successfulPairs1(int[] spells, int[] potions, long success) {
+        int[] ans = new int[spells.length];
+        int cnt = 0;
+        for (int i = 0; i < spells.length; i++) {
+            for (int j = 0; j < potions.length; j++) {
+                if (spells[i] * potions[j] >= success) {
+                    cnt++;
+                }
+            }
+            ans[i] = cnt;
+            cnt = 0;
+        }
+        return ans;
+    }
+
+    public int[] successfulPairs2(int[] spells, int[] potions, long success) {
+        Integer[] idx = new Integer[spells.length];
+        for (int i = 0; i < idx.length; i++) {
+            idx[i] = i;
+        }
+        Arrays.sort(idx, (a, b) -> spells[a] - spells[b]);
+        Arrays.sort(potions);
+        int[] res = new int[spells.length];
+        int tmp = 0;
+        int preIdx = potions.length - 1;
+        for (int i = 0; i < idx.length; i++) {
+            for (int j = preIdx; j >= 0; j--) {
+                if ((long) spells[idx[i]] * potions[j] >= success) {
+                    preIdx = j - 1;
+                    tmp++;
+                } else {
+                    break;
+                }
+            }
+            res[idx[i]] = tmp;
+        }
+        return res;
+    }
+
+
+    public int[] successfulPairs(int[] spells, int[] potions, long success) {
+        Arrays.sort(potions);
+        int n = spells.length, m = potions.length;
+        int[] res = new int[n];
+        for (int i = 0; i < n; i++) {
+            long target = (success + spells[i] - 1) / spells[i];
+            if (target <= potions[potions.length - 1]) {
+                spells[i] = potions.length - binarySearch(potions, target);
+            } else {
+                spells[i] = 0;
+            }
+        }
+        return spells;
+    }
+
+    private int binarySearch(int[] potions, long target) {
+        int l = 0;
+        int r = potions.length - 1;
+        while (l < r) {
+            int mid = (l + r) / 2;
+            if (potions[mid] >= target) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return r;
+    }
+
+
     @Test
     public void test() {
-        maxProduct(new String[]{"abcw", "baz", "foo", "bar", "xtfn", "abcdef"});
+        successfulPairs(new int[]{5, 1, 3}, new int[]{1, 2, 3, 4, 5}, 7);
     }
 
 
