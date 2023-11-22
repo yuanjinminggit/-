@@ -43,8 +43,6 @@ public class Renwudiaoduqi {
                 }
             }
         }
-
-
         return getTotal(n, array, end - 1);
 
     }
@@ -234,6 +232,25 @@ public class Renwudiaoduqi {
     }
 
 
+    public int maximizeSum1(int[] nums, int k) {
+        PriorityQueue<Integer> heap = new PriorityQueue<>(Comparator.reverseOrder());
+        for (int num : nums) {
+            heap.offer(num);
+        }
+        int sum = 0;
+        for (int i = 0; i < k; i++) {
+            Integer num = heap.poll();
+            sum += num;
+            heap.offer(num + 1);
+        }
+        return sum;
+    }
+
+
+    public int maximizeSum(int[] nums, int k) {
+        int m = Arrays.stream(nums).max().getAsInt();
+        return (2 * m + k - 1) * k / 2;
+    }
 
     @Test
     public void test() {

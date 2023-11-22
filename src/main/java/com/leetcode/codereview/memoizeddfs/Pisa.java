@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class Pisa {
     private int[] slices;
-    private int[][] mem;
+
 
     public int maxSizeSlices(int[] slices) {
         this.slices = slices;
@@ -180,6 +180,34 @@ public class Pisa {
             }
         }
         return max;
+    }
+
+    public int minPathCost(int[][] grid, int[][] moveCost) {
+        int ans = Integer.MAX_VALUE;
+        mem = new int[grid.length][grid[0].length];
+        for (int i = 0; i < grid.length; i++) {
+            Arrays.fill(mem[i], -1);
+        }
+        for (int j = 0; j < grid[0].length; j++) {
+            ans = Math.min(ans, dfsminPathCost(0, j, grid, moveCost));
+        }
+        return ans;
+    }
+
+    private int[][] mem;
+
+    private int dfsminPathCost(int i, int j, int[][] grid, int[][] moveCost) {
+        if (i == grid.length - 1) {
+            return grid[i][j];
+        }
+        if (mem[i][j] != -1) {
+            return mem[i][j];
+        }
+        int res = Integer.MAX_VALUE;
+        for (int k = 0; k < grid[0].length; k++) {
+            res = Math.min(res, dfsminPathCost(i + 1, k, grid, moveCost) + moveCost[grid[i][j]][k]);
+        }
+        return mem[i][j] = res + grid[i][j];
     }
 
 
