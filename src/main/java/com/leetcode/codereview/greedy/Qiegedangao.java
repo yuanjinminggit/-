@@ -335,6 +335,179 @@ public class Qiegedangao {
         return r;
     }
 
+    public int[] maximumSumQueries(int[] nums1, int[] nums2, int[][] queries) {
+        int[] ans = new int[queries.length];
+        for (int i = 0; i < queries.length; i++) {
+            int x = queries[i][0];
+            int y = queries[i][1];
+            int max = getMax(nums1, nums2, x, y);
+            ans[i] = max;
+        }
+        return ans;
+    }
+
+    private int getMax(int[] nums1, int[] nums2, int x, int y) {
+        int n = nums1.length;
+        int max = -1;
+        for (int i = 0; i < n; i++) {
+            if (nums1[i] >= x && nums2[i] >= y) {
+                max = Math.max(max, nums1[i] + nums2[i]);
+            }
+        }
+        return max;
+    }
+
+
+    public int maximumSum1(int[] nums) {
+        HashMap<Integer, PriorityQueue<Integer>> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            int sum = getSum(nums[i]);
+            PriorityQueue<Integer> heap = map.getOrDefault(sum, new PriorityQueue<Integer>(Comparator.reverseOrder()));
+            heap.offer(nums[i]);
+            map.put(sum, heap);
+        }
+        int max = 0;
+        for (PriorityQueue<Integer> queue : map.values()) {
+            if (queue.size() >= 2) {
+                int t = queue.poll() + queue.poll();
+                max = Math.max(t, max);
+            }
+        }
+        return max;
+    }
+
+    private int getSum(int num) {
+        int sum = 0;
+        while (num != 0) {
+            sum += num % 10;
+            num /= 10;
+        }
+        return sum;
+    }
+
+
+    public int maximumSum(int[] nums) {
+        int[] val = new int[100];
+        int ans = -1;
+        for (int x : nums) {
+            int t = x, cur = 0;
+            while (t != 0) {
+                cur += t % 10;
+                t /= 10;
+            }
+            if (val[cur] != 0) ans = Math.max(ans, cur + val[cur]);
+            val[cur] = Math.max(val[cur], x);
+        }
+        return ans;
+    }
+
+    int n;
+    int[] nums;
+    int k;
+    private Data[][] memo;
+    private long[] sum;
+
+    public int[] maxSumOfThreeSubarrays(int[] nums, int k) {
+        this.n = nums.length;
+        this.nums = nums;
+        this.k = k;
+        memo = new Data[nums.length][4];
+        sum = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        List<Integer> idx = dfs(0, 3).idx;
+        Collections.reverse(idx);
+        return idx.stream().mapToInt(v -> v).toArray();
+    }
+
+    private Data dfs(int i, int j) {
+        if (n - i < k * j) {
+            return new Data(new ArrayList<>(), Integer.MIN_VALUE / 2);
+        }
+        if (j == 0) {
+            return new Data(new ArrayList<>(), 0);
+        }
+        if (memo[i][j] != null) {
+            return memo[i][j];
+        }
+        Data res = null;
+        Data a = dfs(i + 1, j);
+        Data b = dfs(i + k, j - 1);
+        if (a.sum > b.sum + sum[i + k] - sum[i]) {
+            res = new Data(new ArrayList<>(a.idx), a.sum);
+        } else {
+            ArrayList<Integer> list = new ArrayList<>(b.idx);
+            list.add(i);
+            res = new Data(list, b.sum + sum[i + k] - sum[i]);
+        }
+        return memo[i][j] = res;
+    }
+
+
+    class Data{
+        List<Integer> idx;
+        long sum;
+
+        public Data(List<Integer> idx, long sum) {
+            this.idx = idx;
+            this.sum = sum;
+        }
+    }
+
+
+    public int countPairs1(List<Integer> nums, int target) {
+        int n = nums.size();
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (nums.get(i) + nums.get(j) < target) {
+                    ans++;
+                }
+            }
+        }
+        return ans;
+    }
+
+    public int countPairs2(List<Integer> nums, int target) {
+        Collections.sort(nums);
+        int ans = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            int j = binarySearch0(nums, target - nums.get(i));
+            ans += j > i ? j - i : 0;
+        }
+        return ans;
+    }
+
+    private int binarySearch0(List<Integer> nums, int i) {
+        int l = 0, r = nums.size() - 1;
+        while (l < r) {
+            int mid = (l + r + 1) / 2;
+            if (nums.get(mid) < i) {
+                l = mid;
+            } else {
+                r = mid - 1;
+            }
+        }
+        if (nums.get(0) >= i) {
+            return -1;
+        }
+        return l;
+    }
+
+
+    public int countPairs(List<Integer> nums, int target) {
+        Collections.sort(nums);
+        int res = 0;
+        for (int i = 0, j = nums.size() - 1; i < j; i++) {
+            while (i < j && nums.get(i) + nums.get(j) >= target) {
+                j--;
+            }
+            res += j - i;
+        }
+        return res;
+    }
+
 
     @Test
     public void test() {

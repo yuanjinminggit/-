@@ -1,6 +1,11 @@
 package com.leetcode.codereview.memoizeddfs;
 
+import org.testng.annotations.Test;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 public class Pisa {
     private int[] slices;
@@ -210,5 +215,68 @@ public class Pisa {
         return mem[i][j] = res + grid[i][j];
     }
 
+    private String s;
+    private int[] dp;
 
+    public boolean wordBreak1(String s, List<String> wordDict) {
+        this.s = s;
+        HashSet<String> set = new HashSet<>(wordDict);
+        dp = new int[s.length()];
+        return dfswordBreak(s, set, 0);
+    }
+
+
+    private boolean dfswordBreak(String s, HashSet<String> set, int i) {
+        if (i >= s.length()) {
+            return true;
+        }
+        if (dp[i] != 0) {
+            return dp[i] == 1;
+        }
+        for (int j = i; j < s.length(); j++) {
+            String substring = s.substring(i, j + 1);
+            if (set.contains(substring)) {
+                if (dfswordBreak(s, set, j + 1)) {
+                    dp[i] = 1;
+                    return true;
+                }
+            }
+        }
+        dp[i] = -1;
+        return false;
+    }
+
+
+    public List<String> wordBreak(String s, List<String> wordDict) {
+        ArrayList<String> ans = new ArrayList<>();
+        HashSet<String> set = new HashSet<>(wordDict);
+        ArrayList<String> tmp = new ArrayList<>();
+        dfs(s, set, 0, ans, tmp);
+        return ans;
+    }
+
+    private void dfs(String s, HashSet<String> set, int i, ArrayList<String> ans, ArrayList<String> tmp) {
+        if (i >= s.length()) {
+            StringBuilder sb = new StringBuilder();
+            for (String s1 : tmp) {
+                sb.append(s1 + " ");
+            }
+            ans.add(sb.toString().trim());
+            return;
+        }
+
+        for (int j = i; j < s.length(); j++) {
+            String substring = s.substring(i, j + 1);
+            if (set.contains(substring)) {
+                tmp.add(substring);
+                dfs(s, set, j + 1, ans, tmp);
+                tmp.remove(tmp.size() - 1);
+            }
+        }
+    }
+
+    @Test
+    public void test(){
+        System.out.println("sdufsdh");
+    }
 }

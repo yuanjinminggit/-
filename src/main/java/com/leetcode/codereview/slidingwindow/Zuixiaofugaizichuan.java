@@ -159,6 +159,27 @@ public class Zuixiaofugaizichuan {
         return ans;
     }
 
+    public int maxPower(String s) {
+        char[] charArray = s.toCharArray();
+        int length = charArray.length;
+        int ans = 0, i = 0;
+        while (i < length) {
+            if (i + 1 < length && charArray[i] != charArray[i + 1]) {
+                i++;
+                continue;
+            }
+            int tmp = 0;
+            char c = charArray[i];
+            while (i < length && charArray[i] == c) {
+                tmp++;
+                i++;
+            }
+            ans = Math.max(tmp, ans);
+        }
+        return ans;
+    }
+
+
     @Test
     public void test() {
         longestAlternatingSubarray(new int[]{3, 2, 5, 4}, 5);

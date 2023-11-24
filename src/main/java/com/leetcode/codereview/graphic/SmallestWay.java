@@ -183,4 +183,72 @@ public class SmallestWay {
         }
         return memo[k][i][j] = Math.min(dfs(k - 1, i, j, w), dfs(k - 1, i, k, w) + dfs(k - 1, k, j, w));
     }
+
+
+    private int m;
+    private int n;
+
+    public int maximumMinutes(int[][] grid) {
+        m = grid.length;
+        n = grid[0].length;
+        this.grid = grid;
+        List<int[]> queue = new LinkedList<>();
+        queue.add(new int[]{0, 0});
+        int[] maxValue = bfs(queue);
+        int manToTarget = maxValue[0], manToleft = maxValue[1], mantoUp = maxValue[2];
+        if (manToTarget < 0) return -1;
+        ArrayList<int[]> fire = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    fire.add(new int[]{i, j});
+                }
+            }
+        }
+        int[] fireValue = bfs(fire);
+        int fireToTarget = fireValue[0], fireToleft = fireValue[1], firetoUp = fireValue[2];
+        if (fireToTarget < 0) return (int) 1e9;
+        int res = fireToTarget - manToTarget;
+        if (res < 0) return -1;
+        if (manToleft + res < fireToleft || mantoUp + res < firetoUp) return res;
+        return res - 1;
+    }
+
+
+    private int[][] directions = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    private int[][] grid;
+
+    private int[] bfs(List<int[]> st) {
+        int[][] time = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            Arrays.fill(time[i], -1);
+        }
+
+        LinkedList<int[]> queue = new LinkedList<>();
+        for (int[] arr : st) {
+            int x = arr[0], y = arr[1];
+            time[x][y] = 0;
+            queue.offer(new int[]{x, y});
+        }
+
+        for (int t = 1; queue.size() > 0; ++t) {
+            int sz = queue.size();
+            while (sz-- > 0) {
+                int[] cur = queue.poll();
+                int x = cur[0], y = cur[1];
+                for (int[] direction : directions) {
+                    int nx = x + direction[0];
+                    int ny = y + direction[1];
+                    if (nx < 0 || nx >= m || ny < 0 || ny >= n || time[nx][ny] >= 0 || grid[nx][ny] > 0) {
+                        continue;
+                    }
+                    time[nx][ny] = t;
+                    queue.offer(new int[]{nx, ny});
+                }
+            }
+        }
+        return new int[]{time[m - 1][n - 1], time[m - 1][n - 2], time[m - 2][n - 1]};
+    }
+
+
 }
