@@ -751,5 +751,40 @@ public class Xiangtongdeshu {
         return mem[i] = res;
     }
 
+    public int pseudoPalindromicPaths(TreeNode root) {
+        int[] cnt = new int[10];
+        return dfspseudoPalindromicPaths(root, cnt);
+    }
+
+    private int dfspseudoPalindromicPaths(TreeNode root, int[] cnt) {
+        if (root == null) {
+            return 0;
+        }
+        cnt[root.val]++;
+        int res = 0;
+        if (root.left == null && root.right == null) {
+            if (isPseudoPalindrome(cnt)) {
+                res = 1;
+            }
+        } else {
+            res = dfspseudoPalindromicPaths(root.left, cnt) + dfspseudoPalindromicPaths(root.right, cnt);
+        }
+        cnt[root.val]--;
+        return res;
+    }
+
+    private boolean isPseudoPalindrome(int[] cnt) {
+        int odd = 0;
+        for (int i : cnt) {
+            if (i % 2 == 1) {
+                odd++;
+            }
+        }
+        return odd <= 1;
+    }
+
+
+
+
 
 }

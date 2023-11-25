@@ -250,5 +250,211 @@ public class SmallestWay {
         return new int[]{time[m - 1][n - 1], time[m - 1][n - 2], time[m - 2][n - 1]};
     }
 
+    public long countPalindromePaths(List<Integer> parent, String s) {
+        int n = parent.size();
+        ArrayList<Integer>[] g = new ArrayList[n];
+        Arrays.setAll(g, e -> new ArrayList<>());
+        for (int i = 0; i < n; i++) {
+            Integer p = parent.get(i);
+            g[p].add(i);
+        }
+        HashMap<Integer, Integer> cnt = new HashMap<>();
+        cnt.put(0, 1);
+        return dfs(0, 0, g, s.toCharArray(), cnt);
+    }
+
+    private long dfs(int v, int xor, ArrayList<Integer>[] g, char[] s, HashMap<Integer, Integer> cnt) {
+        long res = 0;
+        for (Integer w : g[v]) {
+            int x = xor ^ (1 << (s[w] - 'a'));
+            res += cnt.getOrDefault(x, 0);
+            for (int i = 0; i < 26; i++) {
+                res += cnt.getOrDefault(x ^ (1 << i), 0);
+            }
+            cnt.merge(x, 1, Integer::sum);
+            res += dfs(w, x, g, s, cnt);
+        }
+        return res;
+    }
+
+
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        ArrayList<List<String>> res = new ArrayList<>();
+        HashSet<String> dict = new HashSet<>(wordList);
+        if (!dict.contains(endWord)) {
+            return res;
+        }
+        dict.remove(beginWord);
+        HashMap<String, Integer> steps = new HashMap<>();
+        steps.put(beginWord, 0);
+        HashMap<String, List<String>> from = new HashMap<>();
+        int step = 1;
+        boolean found = false;
+        int wordLen = beginWord.length();
+        ArrayDeque<String> queue = new ArrayDeque<>();
+        queue.offer(beginWord);
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                String curWord = queue.poll();
+                char[] charArray = curWord.toCharArray();
+
+                for (int j = 0; j < wordLen; j++) {
+                    char origin = charArray[j];
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        charArray[j] = c;
+                        String nextWord = String.valueOf(charArray);
+                        if (steps.containsKey(nextWord) && step == steps.get(nextWord)) {
+                            from.get(nextWord).add(curWord);
+                        }
+                        if (!dict.contains(nextWord)) {
+                            continue;
+                        }
+                        dict.remove(nextWord);
+                        queue.offer(nextWord);
+
+
+                        from.putIfAbsent(nextWord, new ArrayList<>());
+                        from.get(nextWord).add(curWord);
+                        steps.put(nextWord, step);
+                        if (nextWord.equals(endWord)) {
+                            found = true;
+                        }
+                    }
+                    charArray[j] = origin;
+                }
+            }
+            step++;
+            if (found) {
+                break;
+            }
+        }
+
+        if (found) {
+            ArrayDeque<String> path = new ArrayDeque<>();
+            path.add(endWord);
+            backtrack(from, path, beginWord, endWord, res);
+        }
+        return res;
+    }
+
+    private void backtrack(HashMap<String, List<String>> from, ArrayDeque<String> path, String beginWord, String cur, ArrayList<List<String>> res) {
+        if (cur.equals(beginWord)) {
+            res.add(new ArrayList<>(path));
+            return;
+        }
+        for (String precursor : from.get(cur)) {
+            path.addFirst(precursor);
+            backtrack(from, path, beginWord, precursor, res);
+            path.removeFirst();
+        }
+    }
+
+
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        HashSet<String> wordSet = new HashSet<>(wordList);
+        if (wordSet.size() == 0 || !wordSet.contains(endWord)) {
+            return 0;
+        }
+        wordSet.remove(beginWord);
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(beginWord);
+        HashSet<String> visited = new HashSet<>();
+        visited.add(beginWord);
+        int step = 1;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                String currentWord = queue.poll();
+                if (changeWordEveryOneLetter(currentWord, endWord, queue, visited, wordSet)) {
+                    return step + 1;
+                }
+            }
+            step++;
+        }
+        return 0;
+    }
+
+    private boolean changeWordEveryOneLetter(String currentWord, String endWord, Queue<String> queue, HashSet<String> visited, HashSet<String> wordSet) {
+        char[] charArray = currentWord.toCharArray();
+        for (int i = 0; i < endWord.length(); i++) {
+            char originChar = charArray[i];
+            for (char k = 'a'; k <= 'z'; k++) {
+                if (k == originChar) {
+                    continue;
+                }
+                charArray[i] = k;
+                String nextWord = String.valueOf(charArray);
+                if (wordSet.contains(nextWord)) {
+                    if (nextWord.equals(endWord)) {
+                        return true;
+                    }
+                    if (!visited.contains(nextWord)) {
+                        queue.offer(nextWord);
+                        visited.add(nextWord);
+                    }
+                }
+            }
+            charArray[i] = originChar;
+        }
+        return false;
+    }
+
+
+    public int calculateMinimumHP(int[][] dungeon) {
+        if (dungeon == null || dungeon.length == 0 || dungeon[0].length == 0) {
+            return 0;
+        }
+        int rowLen = dungeon.length;
+        int colLen = dungeon[0].length;
+        cache = new int[rowLen][colLen];
+        for (int i = 0; i < rowLen; i++) {
+            Arrays.fill(cache[i], -1);
+        }
+        return dfs(0, 0, rowLen, colLen, dungeon) + 1;
+    }
+
+    private int cache[][];
+
+    private int dfs(int rowIndex, int colIndex, int rowLen, int colLen, int[][] dungeon) {
+        if (rowIndex >= rowLen || colIndex >= colLen) {
+            return Integer.MAX_VALUE;
+        }
+
+        if (rowIndex == rowLen - 1 && colIndex == colLen - 1) {
+            if (dungeon[rowIndex][colIndex] >= 0) {
+                return 0;
+            } else {
+                return -dungeon[rowIndex][colIndex];
+            }
+        }
+
+        if (cache[rowIndex][colIndex] != -1) {
+            return cache[rowIndex][colIndex];
+        }
+
+        int rightMin = dfs(rowIndex, colIndex + 1, rowLen, colLen, dungeon);
+        int downMin = dfs(rowIndex + 1, colIndex, rowLen, colLen, dungeon);
+
+        int min = Math.min(rightMin, downMin);
+        int res = 0;
+        if (dungeon[rowIndex][colIndex] >= 0) {
+            res = min - dungeon[rowIndex][colIndex] < 0 ? 0 : min - dungeon[rowIndex][colIndex];
+        } else {
+            res = min + dungeon[rowIndex][colIndex];
+        }
+        return cache[rowIndex][colIndex] = res;
+    }
+
+
+    public int hammingWeight(int n) {
+        int ret = 0;
+        for (int i = 0; i < 32; i++) {
+            if ((n & (1 << i)) != 0) {
+                ret++;
+            }
+        }
+        return ret;
+    }
 
 }

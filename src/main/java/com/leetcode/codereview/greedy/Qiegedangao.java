@@ -445,7 +445,7 @@ public class Qiegedangao {
     }
 
 
-    class Data{
+    class Data {
         List<Integer> idx;
         long sum;
 
@@ -509,9 +509,146 @@ public class Qiegedangao {
     }
 
 
+    public int maximumGap(int[] nums) {
+        Arrays.sort(nums);
+        int max = 0;
+        for (int i = 1; i < nums.length; i++) {
+            max = Math.max(nums[i] - nums[i - 1], max);
+        }
+        return max;
+    }
+
+
+    public int compareVersion1(String version1, String version2) {
+        String[] s1 = version1.split("\\.");
+        String[] s2 = version2.split("\\.");
+        for (int i = 0; i < s1.length; i++) {
+            int v1 = Integer.parseInt(s1[i]);
+            if (i <= s2.length - 1) {
+
+                int v2 = Integer.parseInt(s2[i]);
+                if (v1 > v2) {
+                    return 1;
+                } else if (v1 < v2) {
+                    return -1;
+                }
+            } else {
+                if (v1 > 0) {
+                    return 1;
+                }
+            }
+        }
+
+        if (s2.length > s1.length) {
+            for (int i = s1.length; i < s2.length; i++) {
+                if (Integer.parseInt(s2[i]) > 0) {
+                    return -1;
+                }
+            }
+        }
+        return 0;
+    }
+
+
+    public int compareVersion(String version1, String version2) {
+        String[] v1 = version1.split("\\.");
+        String[] v2 = version2.split("\\.");
+        for (int i = 0; i < v1.length || i < v2.length; i++) {
+            int x = 0, y = 0;
+            if (i < v1.length) {
+                x = Integer.parseInt(v1[i]);
+            }
+            if (i < v2.length) {
+                y = Integer.parseInt(v2[i]);
+            }
+            if (x > y) {
+                return 1;
+            }
+            if (x < y) {
+                return -1;
+            }
+        }
+        return 0;
+    }
+
+    public String fractionToDecimal1(int numerator, int denominator) {
+        long numeratorLong = (long) numerator;
+        long denominatorLong = (long) denominator;
+        if (numeratorLong % denominatorLong == 0) {
+            return String.valueOf(numeratorLong / denominatorLong);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (numeratorLong < 0 ^ denominatorLong < 0) {
+            sb.append("-");
+        }
+
+        numeratorLong = Math.abs(numeratorLong);
+        denominatorLong = Math.abs(denominatorLong);
+        long integerPart = numeratorLong / denominatorLong;
+        sb.append(integerPart);
+        sb.append('.');
+
+
+        StringBuilder fractionPart = new StringBuilder();
+        HashMap<Long, Integer> remainderIndexMap = new HashMap<>();
+        long remainder = numeratorLong % denominatorLong;
+        int index = 0;
+        while (remainder != 0 && !remainderIndexMap.containsKey(remainder)) {
+            remainderIndexMap.put(remainder, index);
+            remainder *= 10;
+            fractionPart.append(remainder / denominatorLong);
+            remainder %= denominatorLong;
+            index++;
+        }
+
+        if (remainder != 0) {
+            int insertIndex = remainderIndexMap.get(remainder);
+            fractionPart.insert(insertIndex, '(');
+            fractionPart.append(')');
+        }
+        sb.append(fractionPart.toString());
+        return sb.toString();
+    }
+
+    public String fractionToDecimal(int numerator, int denominator) {
+        long a = numerator, b = denominator;
+        if (a % b == 0) return String.valueOf(a / b);
+        StringBuilder sb = new StringBuilder();
+        if (a * b < 0) sb.append("-");
+        a = Math.abs(a);
+        b = Math.abs(b);
+        sb.append(String.valueOf(a / b) + ".");
+        a %= b;
+        HashMap<Long, Integer> map = new HashMap<>();
+        while (a != 0) {
+            map.put(a, sb.length());
+            a *= 10;
+            sb.append(a / b);
+            a %= b;
+            if (map.containsKey(a)) {
+                int u = map.get(a);
+                return String.format("s%(s%)", sb.substring(0, u), sb.substring(u));
+            }
+        }
+        return sb.toString();
+    }
+
+    public int titleToNumber(String columnTitle) {
+        int length = columnTitle.length();
+        char[] chars = columnTitle.toCharArray();
+        int sum = 0;
+        for (int i = 0; i < chars.length; i++) {
+            int num = chars[i] - 'A' + 1;
+            sum = sum * 26 + num;
+        }
+        return sum;
+    }
+
+
     @Test
     public void test() {
-        successfulPairs(new int[]{5, 1, 3}, new int[]{1, 2, 3, 4, 5}, 7);
+        fractionToDecimal(4, 333);
     }
 
 
