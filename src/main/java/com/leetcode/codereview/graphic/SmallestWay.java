@@ -457,4 +457,29 @@ public class SmallestWay {
         return ret;
     }
 
+    public int firstCompleteIndex(int[] arr, int[][] mat) {
+        int n = mat.length;
+        int m = mat[0].length;
+        HashMap<Integer, int[]> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                map.put(mat[i][j], new int[]{i, j});
+            }
+        }
+        int[] rowCount = new int[n];
+        int[] colCount = new int[m];
+        for (int i = 0; i < arr.length; i++) {
+            int[] v = map.get(arr[i]);
+            ++rowCount[v[0]];
+            if (rowCount[v[0]] == m) {
+                return i;
+            }
+            ++colCount[v[1]];
+            if (colCount[v[1]] == n) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 }

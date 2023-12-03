@@ -645,6 +645,24 @@ public class Qiegedangao {
         return sum;
     }
 
+    private static final int MOD = (int) 1e9 + 7;
+
+    public int sumSubarrayMins(int[] arr) {
+        if (arr == null || arr.length == 0) {
+            return 0;
+        }
+        int n = arr.length;
+        long ans = 0;
+        for (int i = 0; i < n; i++) {
+            int min = arr[i];
+            for (int j = i; j < n; j++) {
+                min = Math.min(min, arr[j]);
+                ans = (ans + min) % MOD;
+            }
+        }
+        return (int)ans;
+    }
+
 
     @Test
     public void test() {

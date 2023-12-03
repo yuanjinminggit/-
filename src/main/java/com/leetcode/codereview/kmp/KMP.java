@@ -1,7 +1,7 @@
 package com.leetcode.codereview.kmp;
 
 public class KMP {
-    public void prefixTable(char pattern[], int[] prefix, int n) {
+    public void prefixTable(char[] pattern, int[] prefix, int n) {
         prefix[0] = 0;
         int len = 0;
         int i = 1;
@@ -22,7 +22,7 @@ public class KMP {
 
     }
 
-    public void movePrefixTable(int prefix[], int n) {
+    public void movePrefixTable(int[] prefix, int n) {
         for (int i = n - 1; i > 0; i--) {
             prefix[i] = prefix[i - 1];
         }

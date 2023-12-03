@@ -4,6 +4,7 @@ import com.leetcode.codereview.simpleConstruct.TreeNode;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public class zhiguzi {
@@ -476,6 +477,66 @@ public class zhiguzi {
             sum += x;
         }
         return sum == minS ? maxS : Math.max(maxS, sum - minS);
+    }
+
+
+    public boolean closeStrings(String word1, String word2) {
+        if (word1.length() != word2.length()) {
+            return false;
+        }
+        int[] count1 = new int[26];
+        int[] count2 = new int[26];
+        for (char c : word1.toCharArray()) {
+            count1[c - 'a']++;
+        }
+        for (char c : word2.toCharArray()) {
+            count2[c - 'a']++;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (count1[i] > 0 && count2[i] == 0 || count1[i] == 0 && count2[i] > 0) {
+                return false;
+            }
+        }
+        Arrays.sort(count1);
+        Arrays.sort(count2);
+        return Arrays.equals(count1, count2);
+    }
+
+
+    public boolean carPooling(int[][] trips, int capacity) {
+        int[] d = new int[1001];
+        for (int[] t : trips) {
+            int num = t[0], from = t[1], to = t[2];
+            d[from] += num;
+            d[to] -= num;
+        }
+        int s = 0;
+        for (int v : d) {
+            s += v;
+            if (s > capacity) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    public int maxScore(int[] cardPoints, int k) {
+        int sum = 0;
+        for (int i = 0; i < k; i++) {
+            sum += cardPoints[i];
+        }
+        int max = sum;
+        int n = cardPoints.length;
+        for (int i = 1; i <= k; i++) {
+            sum += cardPoints[n - i] - cardPoints[k - i];
+            max = Math.max(sum, max);
+        }
+        return max;
+    }
+
+    public static void main(String[] args) {
+        HashSet<Integer> set = new HashSet<>();
     }
 
 

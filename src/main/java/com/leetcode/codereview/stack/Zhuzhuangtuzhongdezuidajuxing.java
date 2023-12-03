@@ -2,10 +2,7 @@ package com.leetcode.codereview.stack;
 
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 public class Zhuzhuangtuzhongdezuidajuxing {
 
@@ -349,7 +346,113 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         return (int) ans;
     }
 
+    public int[] dailyTemperatures12(int[] temperatures) {
+        int n = temperatures.length;
+        int[] ans = new int[n];
+        Deque<Integer> stack = new LinkedList<Integer>();
+//        for (int i = n - 1; i >= 0; i--) {
+//            while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {
+//                stack.pop();
+//            }
+//            if (stack.isEmpty()) {
+//                ans[i] = 0;
+//            } else {
+//                ans[i] = stack.peek() - i;
+//            }
+//            stack.push(i);
+//        }
 
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {
+                ans[stack.peek()] = i - stack.peek();
+                stack.pop();
+            }
+            stack.push(i);
+        }
+        return ans;
+    }
+
+    public int[] finalPrices(int[] prices) {
+        ArrayDeque<Integer> stack = new ArrayDeque<>();
+        int[] ans = new int[prices.length];
+        for (int i = 0; i < prices.length; i++) {
+            while (!stack.isEmpty() && prices[i] <= prices[stack.peek()]) {
+                ans[stack.peek()] = prices[stack.peek()] - prices[i];
+                stack.pop();
+            }
+            stack.push(i);
+        }
+        while (!stack.isEmpty()) {
+            ans[stack.peek()] = prices[stack.peek()];
+            stack.pop();
+        }
+        return ans;
+    }
+
+    public int uniqueLetterString(String s) {
+        HashMap<Character, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            if (!map.containsKey(s.charAt(i))) {
+                map.put(s.charAt(i), new ArrayList<>());
+                map.get(s.charAt(i)).add(-1);
+            }
+            map.get(s.charAt(i)).add(i);
+        }
+        int res = 0;
+        for (List<Integer> value : map.values()) {
+            value.add(s.length());
+            int n = value.size();
+            for (int i = 1; i < n - 1; i++) {
+                res += (value.get(i) - value.get(i - 1)) * (value.get(i + 1) - value.get(i));
+            }
+        }
+        return res;
+    }
+
+    private int MOD = (int) 1e9 + 7;
+
+    public int sumSubarrayMins123(int[] nums) {
+        int n = nums.length;
+        int[] l = new int[n];
+        ArrayDeque<Integer> stack = new ArrayDeque<>();
+
+        for (int i = 0; i < n; i++) {
+            int cur = nums[i];
+            while (!stack.isEmpty() && nums[stack.peek()] >= cur) {
+                stack.pop();
+            }
+
+            l[i] = i - (stack.isEmpty() ? -1 : stack.peek()) - 1;
+            stack.push(i);
+        }
+//        for (int i = 1; i < n; i++) {
+//            int p = i - 1;
+//            while (p >= 0 && nums[p] >= nums[i]) {
+//                p--;
+//            }
+//            l[i] = i - p - 1;
+//        }
+        int[] r = new int[n];
+//        for (int i = n - 2; i >= 0; --i) {
+//            int p = i + 1;
+//            while (p < n && nums[p] > nums[i]) ++p;
+//            r[i] = p - i - 1;
+//        }
+        stack.clear();
+        for (int i = n - 2; i >= 0; i--) {
+            int cur = nums[i];
+            while (!stack.isEmpty() && nums[stack.peek()] > cur) {
+                stack.pop();
+            }
+            r[i] = (stack.isEmpty() ? n : stack.peek()) - i - 1;
+            stack.push(i);
+        }
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            res = (int) (res + ((l[i] + r[i] + (long) l[i] * r[i] + 1) * nums[i]) % MOD) % MOD;
+        }
+        return res;
+    }
 
 
     @Test
