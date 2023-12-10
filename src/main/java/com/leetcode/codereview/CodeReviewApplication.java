@@ -8,6 +8,7 @@ public class CodeReviewApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CodeReviewApplication.class, args);
+        System.out.println("yjm1.2分之");
     }
 
 }
