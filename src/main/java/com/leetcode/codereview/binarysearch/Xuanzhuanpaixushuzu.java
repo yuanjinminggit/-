@@ -2,7 +2,9 @@ package com.leetcode.codereview.binarysearch;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class Xuanzhuanpaixushuzu {
     public int findMin(int[] nums) {
@@ -90,7 +92,6 @@ public class Xuanzhuanpaixushuzu {
         return -1;
     }
 
-
     public boolean search(int[] nums, int target) {
         int l = 0;
         int len = nums.length;
@@ -139,7 +140,6 @@ public class Xuanzhuanpaixushuzu {
         return nums[l] == target;
     }
 
-
     public int findPeakElement(int[] nums) {
         if (nums.length == 1) {
             return 0;
@@ -161,7 +161,6 @@ public class Xuanzhuanpaixushuzu {
         return l;
     }
 
-
     public int hIndex(int[] citations) {
         int len = citations.length;
         int r = len - 1;
@@ -179,7 +178,6 @@ public class Xuanzhuanpaixushuzu {
         }
         return len - l;
     }
-
 
     public int triangleNumber(int[] nums) {
         int len = nums.length;
@@ -267,5 +265,40 @@ public class Xuanzhuanpaixushuzu {
             sum += Math.sqrt(mid / rank);
         }
         return sum >= cars;
+    }
+
+    int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+    public int minimumEffortPath(int[][] heights) {
+        int m = heights.length;
+        int n = heights[0].length;
+        int left = 0;
+        int right = 99999;
+        while (left < right) {
+            int mid = (left + right) / 2;
+            Queue<int[]> queue = new LinkedList<>();
+            queue.offer(new int[]{0, 0});
+            boolean[] seen = new boolean[m * n];
+            seen[0] = true;
+            while (!queue.isEmpty()) {
+                int[] cell = queue.poll();
+                int x = cell[0];
+                int y = cell[1];
+                for (int i = 0; i < 4; i++) {
+                    int nx = x + dirs[i][0];
+                    int ny = y + dirs[i][1];
+                    if (nx >= 0 && nx < m && ny >= 0 && ny < n && !seen[nx * n + ny] && Math.abs(heights[x][y] - heights[nx][ny]) <= mid) {
+                        queue.offer(new int[]{nx, ny});
+                        seen[nx * n + ny] = true;
+                    }
+                }
+            }
+            if (seen[m * n - 1]) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return right;
     }
 }

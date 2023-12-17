@@ -1,7 +1,7 @@
-package com.leetcode.codereview.sort.impl;
+package com.leetcode.codereview.sortbase.impl;
 
-import com.leetcode.codereview.sort.Sort;
-import com.leetcode.codereview.sort.util.RandomArrayUtils;
+import com.leetcode.codereview.sortbase.Sort;
+import com.leetcode.codereview.sortbase.util.RandomArrayUtils;
 import org.testng.annotations.Test;
 
 import java.util.Random;

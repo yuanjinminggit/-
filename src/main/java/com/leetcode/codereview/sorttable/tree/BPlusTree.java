@@ -4,7 +4,6 @@ import com.leetcode.codereview.sorttable.SortTable;
 
 import java.util.*;
 
-
 /*
  *
  * 新增节点：
@@ -30,7 +29,7 @@ import java.util.*;
  *
  *
  * */
-public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
+public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K, V> {
 
     private BPlusTreeNode root;
     private BPlusTreeNode head;
@@ -100,12 +99,10 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
         public BPlusTreeDataNode pre;
         public BPlusTreeDataNode next;
 
-
         public BPlusTreeDataNode(List<K> keys, List<V> data) {
             this.data = data;
             this.keys = keys;
         }
-
 
         @Override
         public BPlusTreeNode put(K key, V value) {
@@ -125,12 +122,10 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             return null;
         }
 
-
         @Override
         protected K findLeafKey() {
             return keys.get(0);
         }
-
 
         @Override
         public V get(K key) {
@@ -140,7 +135,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             }
             return null;
         }
-
 
         @Override
         public K floorKey(K key) {
@@ -163,7 +157,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             return pre.keys.get(pre.keys.size() - 1);
         }
 
-
         private int findFloorKeyIndex(K key) {
             int left = 0;
             int right = keys.size() - 1;
@@ -177,7 +170,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             }
             return left;
         }
-
 
         @Override
         public K ceilingKey(K key) {
@@ -197,7 +189,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             return next.keys.get(0);
         }
 
-
         @Override
         public DeleteInfo remove(K key) {
             int equalKeyIndex = findEqualKeyIndex(key);
@@ -212,7 +203,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
 
         }
 
-
         @Override
         protected void borrow(BPlusTreeNode brother, boolean isLeft, K key) {
             BPlusTreeDataNode brotherNode = (BPlusTreeDataNode) brother;
@@ -224,7 +214,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
                 this.data.add(brotherNode.data.remove(0));
             }
         }
-
 
         /*
          * this 指的是做兄弟
@@ -243,7 +232,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             this.next = brotherNode.next;
         }
 
-
         @Override
         public Map<K, V> rangeQuery(K start, K end) {
             HashMap<K, V> map = new HashMap<>();
@@ -257,7 +245,7 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
                 for (int i = 0; i < next.keys.size(); i++) {
                     if (next.keys.get(i).compareTo(end) < 0) {
                         map.put(next.keys.get(i), next.data.get(i));
-                    }else{
+                    } else {
                         return map;
                     }
                 }
@@ -265,7 +253,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             }
             return map;
         }
-
 
         private Integer findCeilingKeyIndex(K key) {
             int left = 0;
@@ -280,7 +267,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             }
             return left;
         }
-
 
         private BPlusTreeNode spite() {
             int midIndex = getMidIndex();
@@ -304,7 +290,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             return rightNode;
         }
 
-
         private int findEqualKeyIndex(K key) {
             int left = 0;
             int right = keys.size() - 1;
@@ -322,17 +307,14 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
         }
     }
 
-
     /***************************BPlusTreeIndexNode**********************************/
     class BPlusTreeIndexNode extends BPlusTreeNode {
         public List<BPlusTreeNode> children;
-
 
         public BPlusTreeIndexNode(List<K> keys, List<BPlusTreeNode> children) {
             this.keys = keys;
             this.children = children;
         }
-
 
         @Override
         public BPlusTreeNode put(K key, V value) {
@@ -356,7 +338,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             return null;
         }
 
-
         private BPlusTreeNode spite() {
             int midIndex = getMidIndex();
             List<K> allkeys = this.keys;
@@ -368,12 +349,10 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             return new BPlusTreeIndexNode(rightKeys, rightchildren);
         }
 
-
         @Override
         protected K findLeafKey() {
             return children.get(0).findLeafKey();
         }
-
 
         @Override
         public V get(K key) {
@@ -381,20 +360,17 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             return children.get(upperIndex).get(key);
         }
 
-
         @Override
         public K floorKey(K key) {
             int upperIndex = findUpperIndex(key);
             return children.get(upperIndex).floorKey(key);
         }
 
-
         @Override
         public K ceilingKey(K key) {
             int upperIndex = findUpperIndex(key);
             return children.get(upperIndex).ceilingKey(key);
         }
-
 
         @Override
         public DeleteInfo remove(K key) {
@@ -427,7 +403,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             }
             return new DeleteInfo(true, keys.size() < UNDER_BOUND);
         }
-
 
         // 父亲帮儿子调整（站在父亲的角度调整儿子，同时也调整自己，保证数据的正确性）
         private void delete_maintain(BPlusTreeNode childNode, int childIndex) {
@@ -469,7 +444,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             }
         }
 
-
         @Override
         public void borrow(BPlusTreeNode brother, boolean isLeft, K parentKey) {
             BPlusTreeIndexNode brotherNode = (BPlusTreeIndexNode) brother;
@@ -485,7 +459,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             }
         }
 
-
         @Override
         protected void combine(BPlusTreeNode childNode, K parentKey) {
             BPlusTreeIndexNode brotherNode = (BPlusTreeIndexNode) childNode;
@@ -494,14 +467,12 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             this.children.addAll(brotherNode.children);
         }
 
-
         @Override
         public Map<K, V> rangeQuery(K start, K end) {
             int upperIndex = findUpperIndex(start);
             return children.get(upperIndex).rangeQuery(start, end);
         }
     }
-
 
     class DeleteInfo {
         public boolean isDelete;
@@ -512,7 +483,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             this.isUnder = isUnder;
         }
     }
-
 
     @Override
     public void put(K key, V value) {
@@ -527,7 +497,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
             return;
         }
 
-
         BPlusTreeNode newChildren = root.put(key, value);
         if (newChildren != null) {
             K leafKey = newChildren.findLeafKey();
@@ -537,13 +506,11 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
 
     }
 
-
     public final <T> List<T> toList(T... t) {
         ArrayList<T> list = new ArrayList<>();
         Collections.addAll(list, t);
         return list;
     }
-
 
     @Override
     public V get(K key) {
@@ -553,7 +520,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
         return root.get(key);
     }
 
-
     @Override
     public boolean containsKey(K key) {
         if (key == null) {
@@ -561,7 +527,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
         }
         return get(key) != null;
     }
-
 
     @Override
     public K ceilingKey(K key) {
@@ -572,18 +537,15 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
 
     }
 
-
     @Override
     public K firstKey() {
         return head.keys.get(0);
     }
 
-
     @Override
     public K lastKey() {
         return tail.keys.get(tail.keys.size() - 1);
     }
-
 
     @Override
     public K floorKey(K key) {
@@ -593,17 +555,14 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
         return root.floorKey(key);
     }
 
-
     @Override
     public int size() {
         return size;
     }
 
-
-    public int height(){
+    public int height() {
         return height;
     }
-
 
     public Map<K, V> rangeQuery(K start, K end) {
         if (start == null || root == null || end == null) {
@@ -611,7 +570,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
         }
         return root.rangeQuery(start, end);
     }
-
 
     @Override
     public void remove(K key) {
@@ -633,11 +591,9 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
         }
     }
 
-
     public String printAll() {
         return printAll(root);
     }
-
 
     private String printAll(BPlusTreeNode root) {
         LinkedList<BPlusTreeNode> queue = new LinkedList<>();
@@ -666,7 +622,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
         return sb.toString();
     }
 
-
     public static void main(String[] args) {
         BPlusTree<Integer, Integer> bPlusTree = new BPlusTree<Integer, Integer>(5);
         TreeMap<Integer, Integer> map = new TreeMap<>();
@@ -683,7 +638,6 @@ public class BPlusTree<K extends Comparable<K>, V> implements SortTable<K,V> {
                 map.put(key, val);
 //                System.out.println(bPlusTree.printAll());
             }
-
 
 //            if (Math.random() > 0.3 && bPlusTree.size > 0) {
 //                int floorKey = (int) (Math.random() * maxkey);

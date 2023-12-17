@@ -2,10 +2,7 @@ package com.leetcode.codereview.memoizeddfs;
 
 import com.leetcode.codereview.simpleConstruct.TreeNode;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 public class zhiguzi {
 
@@ -412,7 +409,6 @@ public class zhiguzi {
         return max;
     }
 
-    private int cache[];
 
     private int dfsmaximumCostSubstring(String s, HashMap<Character, Integer> map, int i) {
         if (i < 0) {
@@ -535,8 +531,54 @@ public class zhiguzi {
         return max;
     }
 
-    public static void main(String[] args) {
-        HashSet<Integer> set = new HashSet<>();
+    private int cache[];
+
+    int climbStairs(int n) {
+        cache = new int[n + 1];
+        return dfsclimbStairs(n);
+    }
+
+    private int dfsclimbStairs(int n) {
+        if (n == 1) {
+            return 1;
+        }
+        if (n == 2) {
+            return 2;
+        }
+        if (cache[n] != 0) {
+            return cache[n];
+        }
+        return cache[n] = (cache[n - 1] == 0 ? dfsclimbStairs(n - 1) : cache[n - 1]) + (cache[n - 2] == 0 ? dfsclimbStairs(n - 2) : cache[n - 2]);
+    }
+
+    public long maxTaxiEarnings(int n, int[][] rides) {
+        List<int[]>[] groups = new ArrayList[n + 1];
+        for (int[] r : rides) {
+            int start = r[0], end = r[1], tip = r[2];
+            if (groups[end] == null) {
+                groups[end] = new ArrayList<>();
+            }
+            groups[end].add(new int[]{start, end - start + tip});
+        }
+        long[] memo = new long[n + 1];
+        Arrays.fill(memo, -1);
+        return dfs(n, memo, groups);
+    }
+
+    private long dfs(int i, long[] memo, List<int[]>[] groups) {
+        if (i == 1) {
+            return 0;
+        }
+        if (memo[i] != -1) {
+            return memo[i];
+        }
+        long res = dfs(i - 1, memo, groups);
+        if (groups[i] != null) {
+            for (int[] p : groups[i]) {
+                res = Math.max(res, dfs(p[0], memo, groups) + p[1]);
+            }
+        }
+        return memo[i] = res;
     }
 
 

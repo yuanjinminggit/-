@@ -1,6 +1,6 @@
-package com.leetcode.codereview.sort.util;
+package com.leetcode.codereview.sortbase.util;
 
-import com.leetcode.codereview.sort.Sort;
+import com.leetcode.codereview.sortbase.Sort;
 
 import java.util.Random;
 

@@ -16,7 +16,6 @@ public class Xiangtongdeshu {
         return p.val == q.val && isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
     }
 
-
     public boolean isSymmetric(TreeNode root) {
         return isSymmetric(root.left, root.right);
     }
@@ -76,7 +75,6 @@ public class Xiangtongdeshu {
         return root;
     }
 
-
     public int sumNumbers(TreeNode root) {
         return dfssumNumbers(root, 0);
     }
@@ -127,7 +125,6 @@ public class Xiangtongdeshu {
             dfsrightSideView(root.left, list, level);
         }
     }
-
 
     public int countNodes1(TreeNode root) {
         if (root == null) {
@@ -196,7 +193,6 @@ public class Xiangtongdeshu {
         return left == null ? right : left;
     }
 
-
     public int[] findFrequentTreeSum(TreeNode root) {
         HashMap<Integer, Integer> map = new HashMap<>();
         dfsfindFrequentTreeSum(root, map);
@@ -229,7 +225,6 @@ public class Xiangtongdeshu {
         return sum;
     }
 
-
     public boolean isSubtree(TreeNode root, TreeNode subRoot) {
 
         return dfsIsSubTree(root, subRoot, root, subRoot);
@@ -261,7 +256,6 @@ public class Xiangtongdeshu {
     }
 
     private Map<Integer, TreeNode> parents = new HashMap<>();
-
 
     public List<Integer> distanceK1(TreeNode root, TreeNode target, int k) {
 
@@ -360,7 +354,6 @@ public class Xiangtongdeshu {
         helper(root.right, distance + 1);
     }
 
-
     public boolean flipEquiv1(TreeNode root1, TreeNode root2) {
         if (root1.val != root2.val) {
             return false;
@@ -432,7 +425,6 @@ public class Xiangtongdeshu {
                 dfsisCousins(root.right, x, y, depth + 1);
     }
 
-
     public int numTilePossibilities1(String tiles) {
         HashMap<Character, Integer> count = new HashMap<>();
         for (char t : tiles.toCharArray()) {
@@ -480,7 +472,6 @@ public class Xiangtongdeshu {
         }
         return res;
     }
-
 
     public TreeNode sufficientSubset(TreeNode root, int limit) {
 
@@ -539,7 +530,6 @@ public class Xiangtongdeshu {
             serialize(root.right, sb);
         }
 
-
         public TreeNode deserialize(String data) {
             if (data.equals("")) {
                 return null;
@@ -564,7 +554,6 @@ public class Xiangtongdeshu {
             return root;
         }
     }
-
 
     public int[] smallestMissingValueSubtree(int[] parents, int[] nums) {
         int n = parents.length;
@@ -607,7 +596,6 @@ public class Xiangtongdeshu {
         }
     }
 
-
     public TreeNode lcaDeepestLeaves1(TreeNode root) {
         TreeNode[] fa = new TreeNode[1001];
         LinkedList<TreeNode> queue = new LinkedList<>();
@@ -643,7 +631,6 @@ public class Xiangtongdeshu {
         return queue.peek();
     }
 
-
     public TreeNode lcaDeepestLeaves2(TreeNode root) {
         dfslcaDeepestLeaves(root, 0);
         return res;
@@ -664,7 +651,6 @@ public class Xiangtongdeshu {
         }
         return Math.max(left, right);
     }
-
 
     public TreeNode lcaDeepestLeaves(TreeNode root) {
         return dfs(root).getValue();
@@ -713,7 +699,6 @@ public class Xiangtongdeshu {
         }
         return memo[cur][back] = result;
     }
-
 
     private int[] arr;
     private long[] mem;
@@ -783,8 +768,55 @@ public class Xiangtongdeshu {
         return odd <= 1;
     }
 
+    public TreeNode reverseOddLevels1(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        dfsreverseOddLevels(root.left, root.right, true);
+        return root;
+    }
 
+    private void dfsreverseOddLevels(TreeNode left, TreeNode right, boolean swap) {
+        if (left == null) {
+            return;
+        }
+        if (swap) {
+            int tmp = left.val;
+            left.val = right.val;
+            right.val = tmp;
+        }
+        dfsreverseOddLevels(left.left, right.right, !swap);
+        dfsreverseOddLevels(left.right, right.left, !swap);
+    }
 
-
+    public TreeNode reverseOddLevels(TreeNode root) {
+        if (root == null) {
+            return root;
+        }
+        LinkedList<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        boolean swap = true;
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            ArrayList<TreeNode> list = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                list.add(node);
+                if (node.left != null) {
+                    queue.offer(node.left);
+                    queue.offer(node.right);
+                }
+            }
+            if (swap) {
+                for (int i = 0, j = size - 1; i <= j; i++, j--) {
+                    int tmp = list.get(i).val;
+                    list.get(i).val = list.get(j).val;
+                    list.get(j).val = tmp;
+                }
+            }
+            swap = !swap;
+        }
+        return root;
+    }
 
 }

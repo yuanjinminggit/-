@@ -134,7 +134,6 @@ public class Qiegedangao {
         return b != 0 ? gcd(b, a % b) : a;
     }
 
-
     public int maxProduct(int[] nums) {
         int n = nums.length;
         int max = Integer.MIN_VALUE;
@@ -147,7 +146,6 @@ public class Qiegedangao {
         }
         return max;
     }
-
 
     private int[][] mem;
 
@@ -203,7 +201,6 @@ public class Qiegedangao {
         return max;
     }
 
-
     public List<String> findRepeatedDnaSequences(String s) {
         HashMap<String, Integer> map = new HashMap<>();
         ArrayList<String> res = new ArrayList<>();
@@ -241,7 +238,6 @@ public class Qiegedangao {
         return maxLen;
     }
 
-
     public int vowelStrings(String[] words, int left, int right) {
         int len = 0;
         for (int i = left; i < right; i++) {
@@ -264,7 +260,6 @@ public class Qiegedangao {
         }
         return (n - cnt) % 2 != 0 ? cnt + 1 : cnt;
     }
-
 
     public int[] successfulPairs1(int[] spells, int[] potions, long success) {
         int[] ans = new int[spells.length];
@@ -304,7 +299,6 @@ public class Qiegedangao {
         }
         return res;
     }
-
 
     public int[] successfulPairs(int[] spells, int[] potions, long success) {
         Arrays.sort(potions);
@@ -357,7 +351,6 @@ public class Qiegedangao {
         return max;
     }
 
-
     public int maximumSum1(int[] nums) {
         HashMap<Integer, PriorityQueue<Integer>> map = new HashMap<>();
         for (int i = 0; i < nums.length; i++) {
@@ -384,7 +377,6 @@ public class Qiegedangao {
         }
         return sum;
     }
-
 
     public int maximumSum(int[] nums) {
         int[] val = new int[100];
@@ -444,7 +436,6 @@ public class Qiegedangao {
         return memo[i][j] = res;
     }
 
-
     class Data {
         List<Integer> idx;
         long sum;
@@ -454,7 +445,6 @@ public class Qiegedangao {
             this.sum = sum;
         }
     }
-
 
     public int countPairs1(List<Integer> nums, int target) {
         int n = nums.size();
@@ -495,7 +485,6 @@ public class Qiegedangao {
         return l;
     }
 
-
     public int countPairs(List<Integer> nums, int target) {
         Collections.sort(nums);
         int res = 0;
@@ -508,7 +497,6 @@ public class Qiegedangao {
         return res;
     }
 
-
     public int maximumGap(int[] nums) {
         Arrays.sort(nums);
         int max = 0;
@@ -518,14 +506,12 @@ public class Qiegedangao {
         return max;
     }
 
-
     public int compareVersion1(String version1, String version2) {
         String[] s1 = version1.split("\\.");
         String[] s2 = version2.split("\\.");
         for (int i = 0; i < s1.length; i++) {
             int v1 = Integer.parseInt(s1[i]);
             if (i <= s2.length - 1) {
-
                 int v2 = Integer.parseInt(s2[i]);
                 if (v1 > v2) {
                     return 1;
@@ -548,7 +534,6 @@ public class Qiegedangao {
         }
         return 0;
     }
-
 
     public int compareVersion(String version1, String version2) {
         String[] v1 = version1.split("\\.");
@@ -588,7 +573,6 @@ public class Qiegedangao {
         long integerPart = numeratorLong / denominatorLong;
         sb.append(integerPart);
         sb.append('.');
-
 
         StringBuilder fractionPart = new StringBuilder();
         HashMap<Long, Integer> remainderIndexMap = new HashMap<>();
@@ -660,14 +644,101 @@ public class Qiegedangao {
                 ans = (ans + min) % MOD;
             }
         }
-        return (int)ans;
+        return (int) ans;
     }
 
+    public int nextBeautifulNumber1(int n) {
+        for (int i = n + 1; i <= 1224444; i++) {
+            if (isBalance(i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private boolean isBalance(int x) {
+        int[] count = new int[10];
+        while (x > 10) {
+            count[x % 10]++;
+            x /= 10;
+        }
+        for (int i = 0; i < 10; i++) {
+            if (count[i] > 0 && count[i] != i) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int nextBeautifulNumber(int n) {
+        TreeSet<Integer> sets = new TreeSet<>();
+        // 分层，位数为1-7
+        for (int i = 1; i <= 7; i++) {
+            List<List<Integer>> steps = drive(i);
+            for (List<Integer> step : steps) {
+                int[][] cnt = step.stream().map(x -> new int[]{x, x}).toArray(int[][]::new);
+                dfs(cnt, i, 0, sets);
+            }
+        }
+        return sets.higher(n);
+    }
+
+    private void dfs(int[][] cnt, int total, int v, TreeSet<Integer> sets) {
+        if (total == 0) {
+            sets.add(v);
+            return;
+        }
+        for (int i = 0; i < cnt.length; i++) {
+            if (cnt[i][1] > 0) {
+                cnt[i][1]--;
+                dfs(cnt, total - 1, v * 10 + cnt[i][0], sets);
+                cnt[i][1]++;
+            }
+        }
+    }
+
+    private List<List<Integer>> drive(int i) {
+        List<List<Integer>> collector = new ArrayList<>();
+        layer(i, new HashSet<Integer>(), collector);
+        return collector;
+    }
+
+    // 生出组合
+    private void layer(int v, Set<Integer> set, List<List<Integer>> collector) {
+        if (v == 0) {
+            collector.add(new ArrayList<>(set));
+            return;
+        }
+        for (int i = 1; i <= v; i++) {
+            if (!set.contains(i)) {
+                set.add(i);
+                layer(v - i, set, collector);
+                set.remove(i);
+            }
+        }
+    }
+
+    public int[] secondGreaterElement(int[] nums) {
+        int[] res = new int[nums.length];
+        Arrays.fill(res, -1);
+        Deque<Integer> stack = new ArrayDeque<>();
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        for (int i = 0; i < nums.length; i++) {
+            while (!pq.isEmpty() && nums[i] > nums[pq.peek()[1]]) {
+                res[pq.poll()[1]] = nums[i];
+            }
+            while (!stack.isEmpty() && nums[stack.peek()] < nums[i]) {
+                pq.offer(new int[]{nums[stack.peek()], stack.peek()});
+                stack.pop();
+            }
+            stack.push(i);
+        }
+        return res;
+    }
 
     @Test
     public void test() {
-        fractionToDecimal(4, 333);
+        nextBeautifulNumber(1000);
     }
-
 
 }

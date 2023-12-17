@@ -1,5 +1,7 @@
+
 package com.leetcode.codereview.designing;
 
+/*
 class NumArray {
 
     SegmentTree st;
@@ -57,5 +59,22 @@ class NumArray {
             }
             return res;
         }
+    }
+}*/
+class NumArray {
+
+    int[] sums;
+
+    public NumArray(int[] nums) {
+        int length = nums.length;
+        sums = new int[length + 1];
+        // sums[i+1]表示0，i的元素和
+        for (int i = 0; i < length; i++) {
+            sums[i + 1] = sums[i] + nums[i];
+        }
+    }
+
+    public int sumRange(int left, int right) {
+        return sums[right + 1] - sums[left];
     }
 }

@@ -39,7 +39,6 @@ public class Zuixiaofugaizichuan {
         return minLen == s.length() + 1 ? "" : s.substring(begin, begin + minLen);
     }
 
-
     public List<Integer> findAnagrams(String s, String p) {
         int sLen = s.length();
         ArrayList<Integer> res = new ArrayList<>();
@@ -108,7 +107,6 @@ public class Zuixiaofugaizichuan {
             return;
         }
 
-
         String s1 = s.substring(idx, idx + length);
         for (int i = 0; i < words.length; i++) {
             if (words[i].equals(s1)) {
@@ -139,7 +137,6 @@ public class Zuixiaofugaizichuan {
         }
         return right - left;
     }
-
 
     public int longestAlternatingSubarray(int[] nums, int threshold) {
         int n = nums.length;
@@ -179,6 +176,43 @@ public class Zuixiaofugaizichuan {
         return ans;
     }
 
+    public String makeSmallestPalindrome(String s) {
+        char[] charArray = s.toCharArray();
+        int i = 0, j = s.length() - 1;
+        while (i < j) {
+            charArray[i] = charArray[j] = (char) Math.min(charArray[i], charArray[j]);
+            i++;
+            j--;
+        }
+        return new String(charArray);
+    }
+
+    public int[] secondGreaterElement(int[] nums) {
+        int n = nums.length;
+        int[] res = new int[n];
+        Arrays.fill(res, -1);
+        ArrayList<Integer> s = new ArrayList<>();
+        ArrayList<Integer> t = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            while (t.size() > 0 && nums[t.get(t.size() - 1)] < nums[i]) {
+                res[t.get(t.size() - 1)] = nums[i];
+                t.remove(t.size() - 1);
+            }
+
+            int pos = s.size() - 1;
+            while (pos >= 0 && nums[s.get(pos)] < nums[i]) {
+                pos--;
+            }
+            for (int j = pos + 1; j < s.size(); j++) {
+                t.add(s.get(j));
+            }
+            for (int j = s.size() - 1; j > pos; --j) {
+                s.remove(j);
+            }
+            s.add(i);
+        }
+        return res;
+    }
 
     @Test
     public void test() {
