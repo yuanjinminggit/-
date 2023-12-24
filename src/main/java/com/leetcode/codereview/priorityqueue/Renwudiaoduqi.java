@@ -100,7 +100,6 @@ public class Renwudiaoduqi {
         return res;
     }
 
-
     public int[] maxSlidingWindow(int[] nums, int k) {
         int n = nums.length;
         LinkedList<Integer> deque = new LinkedList<>();
@@ -124,7 +123,6 @@ public class Renwudiaoduqi {
         }
         return ans;
     }
-
 
     class MedianFinder {
         PriorityQueue<Integer> queMin;
@@ -207,7 +205,6 @@ public class Renwudiaoduqi {
         }
     }
 
-
     public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
         PriorityQueue<int[]> pq = new PriorityQueue<>(k, (o1, o2) -> {
             return nums1[o1[0]] + nums2[o1[1]] - nums1[o2[0]] - nums2[o2[1]];
@@ -231,7 +228,6 @@ public class Renwudiaoduqi {
         return ans;
     }
 
-
     public int maximizeSum1(int[] nums, int k) {
         PriorityQueue<Integer> heap = new PriorityQueue<>(Comparator.reverseOrder());
         for (int num : nums) {
@@ -246,10 +242,137 @@ public class Renwudiaoduqi {
         return sum;
     }
 
-
     public int maximizeSum(int[] nums, int k) {
         int m = Arrays.stream(nums).max().getAsInt();
         return (2 * m + k - 1) * k / 2;
+    }
+
+    public int minStoneSum(int[] piles, int k) {
+        heapify(piles);
+        while (k-- > 0 && piles[0] != 1) {
+            piles[0] -= piles[0] / 2;
+            sink(piles, 0);
+        }
+        int ans = 0;
+        for (int pile : piles) {
+            ans += pile;
+        }
+        return ans;
+    }
+
+    private void heapify(int[] h) {
+        for (int i = h.length / 2 - 1; i >= 0; i--) {
+            sink(h, i);
+        }
+    }
+
+    private void sink(int[] h, int i) {
+        int n = h.length;
+        while (2 * i + 1 < n) {
+            int j = 2 * i + 1;
+            if (j + 1 < n && h[j + 1] > h[j]) {
+                j++;
+            }
+            if (h[j] <= h[i]) {
+                break;
+            }
+            swap(h, i, j);
+            i = j;
+        }
+    }
+
+    private void swap(int[] h, int i, int j) {
+        int tmp = h[i];
+        h[i] = h[j];
+        h[j] = tmp;
+    }
+
+    public long maximumSumOfHeights(List<Integer> maxHeights) {
+        long res = 0;
+        int n = maxHeights.size();
+        long[] pre = new long[n];
+        long[] suf = new long[n];
+        ArrayDeque<Integer> stack1 = new ArrayDeque<>();
+        ArrayDeque<Integer> stack2 = new ArrayDeque<>();
+        for (int i = 0; i < n; i++) {
+            while (!stack1.isEmpty() && maxHeights.get(i) < maxHeights.get(stack1.peek())) {
+                stack1.pop();
+            }
+            if (stack1.isEmpty()) {
+                pre[i] = (long) (i + 1) * maxHeights.get(i);
+            } else {
+                pre[i] = pre[stack1.peek()] + (long) (i - stack1.peek()) * maxHeights.get(i);
+            }
+            stack1.push(i);
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack2.isEmpty() && maxHeights.get(i) < maxHeights.get(stack2.peek())) {
+                stack2.pop();
+            }
+            if (stack2.isEmpty()) {
+                suf[i] = (long) (n - i) * maxHeights.get(i);
+            } else {
+                suf[i] = suf[stack2.peek()] + (long) (stack2.peek() - i) * maxHeights.get(i);
+            }
+            stack2.push(i);
+        }
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, pre[i] + suf[i] - maxHeights.get(i));
+        }
+        return res;
+    }
+
+    private int[] predp;
+    private int[] sufdp;
+
+    public int minimumMountainRemovals(int[] nums) {
+        int n = nums.length;
+
+        predp = new int[n];
+        sufdp = new int[n];
+        Arrays.fill(predp, -1);
+        Arrays.fill(sufdp,-1);
+        getLISArray(nums, predp);
+        int[] reversed = reverse(nums);
+        getLISArray(reversed, sufdp);
+        int[] suf = reverse(sufdp);
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            if (predp[i] > 1 && suf[i] > 1) {
+                ans = Math.max(ans, predp[i] + suf[i] - 1);
+            }
+        }
+        return n - ans;
+
+    }
+
+    public int[] reverse(int[] nums) {
+        int n = nums.length;
+        int[] reverse = new int[n];
+        for (int i = 0; i < n; i++) {
+            reverse[i] = nums[n - 1 - i];
+        }
+        return reverse;
+    }
+
+    private void getLISArray(int[] nums, int[] predp) {
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            dfsgetLISArray(i, predp,nums);
+        }
+    }
+
+    private int dfsgetLISArray(int i, int[] predp, int[] nums) {
+        if (predp[i] != -1) {
+            return predp[i];
+        }
+        int max = 0;
+        for (int j = 0; j < i; j++) {
+            if (nums[j] < nums[i]) {
+                max = Math.max(max, dfsgetLISArray(j, predp, nums));
+            }
+        }
+        return predp[i] = max + 1;
     }
 
     @Test

@@ -1,6 +1,8 @@
 package com.leetcode.codereview.memoizeddfs;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 public class ZuiXiaoTiLiXiaoHaoLuJing {
 
@@ -40,8 +42,6 @@ public class ZuiXiaoTiLiXiaoHaoLuJing {
         return dp[x][y] = min;
     }
 
-
-
     public int minCostClimbingStairs1(int[] cost) {
         int len = cost.length;
         mem = new int[len];
@@ -58,7 +58,9 @@ public class ZuiXiaoTiLiXiaoHaoLuJing {
         }
         return mem[idx] = Math.min(dfsminCostClimbingStairs(cost, idx + 1), dfsminCostClimbingStairs(cost, idx + 2)) + cost[idx];
     }
+
     private int mem[];
+
     public int minCostClimbingStairs(int[] cost) {
         int n = cost.length;
         mem = new int[n + 1];
@@ -74,5 +76,21 @@ public class ZuiXiaoTiLiXiaoHaoLuJing {
             return mem[i];
         }
         return mem[i] = Math.min(dfsminCost(i - 1, cost) + cost[i - 1], dfsminCost(i - 2, cost) + cost[i - 2]);
+    }
+
+    public int minStoneSum(int[] piles, int k) {
+        PriorityQueue<Integer> heap = new PriorityQueue<>(Comparator.reverseOrder());
+        for (int pile : piles) {
+            heap.offer(pile);
+        }
+        for (int i = 0; i < k; i++) {
+            Integer poll = heap.poll();
+            heap.offer((poll + 1) / 2);
+        }
+        int sum = 0;
+        while (!heap.isEmpty()) {
+            sum += heap.poll();
+        }
+        return sum;
     }
 }

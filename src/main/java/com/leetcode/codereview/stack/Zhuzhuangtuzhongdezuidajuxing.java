@@ -19,7 +19,6 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         return max;
     }
 
-
     /*枚举高*/
     public int largestRectangleArea3(int[] heights) {
         int max = 0;
@@ -36,7 +35,6 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         }
         return max;
     }
-
 
     public int largestRectangleArea(int[] heights) {
         int len = heights.length;
@@ -67,7 +65,6 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         return area;
     }
 
-
     public String removeDuplicateLetters(String s) {
         Deque<Character> stack = new LinkedList<>();
         int len = s.length();
@@ -95,7 +92,6 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         return sb.reverse().toString();
     }
 
-
     public boolean find132pattern(int[] nums) {
         int len = nums.length;
         for (int i = 0; i < len; i++) {
@@ -115,7 +111,6 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         return false;
     }
 
-
     public int[] nextGreaterElement1(int[] nums1, int[] nums2) {
         int[] ans = new int[nums1.length];
         Arrays.fill(ans, -1);
@@ -132,7 +127,6 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         }
         return ans;
     }
-
 
     public int[] nextGreaterElement(int[] nums1, int[] nums2) {
         Deque<Integer> stack = new LinkedList<>();
@@ -152,7 +146,6 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         }
         return res;
     }
-
 
     public int findUnsortedSubarray1(int[] nums) {
         int[] newInt = new int[nums.length];
@@ -179,7 +172,6 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         return end - start + 1;
     }
 
-
     public int findUnsortedSubarray3(int[] nums) {
         int n = nums.length;
         int[] arr = nums.clone();
@@ -189,7 +181,6 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         while (i <= j && nums[j] == arr[j]) j--;
         return j - i + 1;
     }
-
 
     public int findUnsortedSubarray(int[] nums) {
         int n = nums.length;
@@ -210,7 +201,6 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         }
         return j == i ? 0 : j - i - 1;
     }
-
 
     public int[] dailyTemperatures1(int[] temperatures) {
         int len = temperatures.length;
@@ -239,7 +229,6 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         return res;
     }
 
-
     public int maxWidthRamp1(int[] nums) {
         int max = 0;
         for (int i = 0; i < nums.length; i++) {
@@ -251,7 +240,6 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         }
         return max;
     }
-
 
     public int maxWidthRamp(int[] nums) {
         int max = 0;
@@ -454,6 +442,37 @@ public class Zhuzhuangtuzhongdezuidajuxing {
         return res;
     }
 
+    public long maximumSumOfHeights(List<Integer> maxHeights) {
+        int max = 0;
+        for (int i = 0; i < maxHeights.size(); i++) {
+            int sum = getTopSum(i, maxHeights);
+            max = Math.max(sum, max);
+        }
+        return max;
+    }
+
+    private int getTopSum(int i, List<Integer> maxHeights) {
+        int sum = maxHeights.get(i);
+        int max = sum;
+        for (int j = i; j >= 1; j--) {
+            if (maxHeights.get(j - 1) <= maxHeights.get(j)) {
+                sum += maxHeights.get(j - 1);
+                max = maxHeights.get(j - 1);
+            } else {
+                sum += max;
+            }
+        }
+        max = maxHeights.get(i);
+        for (int j = i; j < maxHeights.size() - 1; j++) {
+            if (maxHeights.get(j + 1) <= maxHeights.get(j)) {
+                sum += maxHeights.get(j + 1);
+                max = maxHeights.get(j + 1);
+            } else {
+                sum += max;
+            }
+        }
+        return sum;
+    }
 
     @Test
     public void test() {
