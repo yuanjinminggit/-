@@ -55,7 +55,7 @@ public class Pailiexulie {
         ArrayList<List<Integer>> ans = new ArrayList<>();
         ArrayList<Integer> path = new ArrayList<>();
         boolean[] visited = new boolean[candidates.length];
-        dfscombinationSum(candidates, target, 0, ans, path,visited);
+        dfscombinationSum(candidates, target, 0, ans, path, visited);
         return ans;
     }
 
@@ -85,7 +85,6 @@ public class Pailiexulie {
         return ans;
     }
 
-
     public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
         ArrayList<Integer> path = new ArrayList<>();
         ArrayList<List<Integer>> ans = new ArrayList<>();
@@ -111,7 +110,6 @@ public class Pailiexulie {
         dfspathSum(root.right, targetSum - root.val, path, ans);
         path.remove(path.size() - 1);
     }
-
 
     private int[][] f;
     List<List<String>> ret = new ArrayList<List<String>>();
@@ -154,7 +152,73 @@ public class Pailiexulie {
         }
     }
 
+    public List<Integer> splitIntoFibonacci1(String num) {
+        List<Integer> res = new ArrayList<>();
+        int len = num.length();
+        char[] charArray = num.toCharArray();
+        dfs(charArray, 0, len, res);
+        return res;
+    }
 
+    private boolean dfs(char[] charArray, int begin, int len, List<Integer> res) {
+        if (begin == len) {
+            return res.size() > 2;
+        }
+        int num = 0;
+        for (int i = 0; i < len; i++) {
+            num = num * 10 + (charArray[i] - '0');
+            if (num < 0) {
+                return false;
+            }
+            if (res.size() < 2 || res.get(res.size() - 2) + res.get(res.size() - 1) == num) {
+                res.add(num);
+                if (dfs(charArray, i + 1, len, res)) {
+                    return true;
+                }
+                res.remove(res.size() - 1);
+            }
+            if (i == begin && charArray[i] == '0') {
+                return false;
+            }
+        }
+        return false;
+    }
 
+    public List<Integer> splitIntoFibonacci(String num) {
+        ArrayList<Integer> list = new ArrayList<>();
+        backtrack(list, num, num.length(), 0, 0, 0);
+        return list;
+    }
+
+    private boolean backtrack(ArrayList<Integer> list, String num, int length, int index, int sum, int prev) {
+        if (index == length) {
+            return list.size() >= 3;
+        }
+        long curLong = 0;
+        for (int i = index; i < length; i++) {
+            if (i > index && num.charAt(index) == '0') {
+                break;
+            }
+            curLong = curLong * 10 + num.charAt(i) - '0';
+            if (curLong > Integer.MAX_VALUE) {
+                break;
+            }
+            int curr = (int) curLong;
+            if (list.size() >= 2) {
+                if (curr < sum) {
+                    continue;
+                } else if (curr > sum) {
+                    break;
+                }
+            }
+            list.add(curr);
+            if (backtrack(list, num, length, i + 1, prev + curr, curr)) {
+                return true;
+            } else {
+                list.remove(list.size() - 1);
+            }
+        }
+        return false;
+    }
 
 }

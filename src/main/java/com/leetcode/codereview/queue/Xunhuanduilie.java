@@ -19,7 +19,6 @@ public class Xunhuanduilie {
             rear = front = 0;
         }
 
-
         public boolean enQueue(int value) {
             if (isFull()) {
                 return false;

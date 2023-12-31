@@ -1,11 +1,17 @@
 package com.leetcode.codereview.slidingwindow;
 
 import org.testng.annotations.Test;
+import org.testng.collections.Sets;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Zuixiaofugaizichuan {
     public String minWindow(String s, String t) {
@@ -214,9 +220,153 @@ public class Zuixiaofugaizichuan {
         return res;
     }
 
+    public List<Integer> numOfBurgers(int a, int b) {
+        int x = a - 2 * b;
+        int y = 4 * b - a;
+        if (x >= 0 && y >= 0 && x % 2 == 0 && y % 2 == 0) {
+            return Arrays.asList(x / 2, y / 2);
+        }
+        return new ArrayList<>();
+    }
+
+    private int[][] memo;
+
+    public int maxStudents(char[][] seats) {
+        int m = seats.length;
+        int n = seats[0].length;
+        memo = new int[m][1 << n];
+        for (int[] ints : memo) {
+            Arrays.fill(ints, -1);
+        }
+        int[] a = new int[m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (seats[i][j] == '.') {
+                    // 最终结果就是全部都倒过来
+                    a[i] |= 1 << j;
+                }
+            }
+        }
+        return dfs(m - 1, a[m - 1], a);
+    }
+
+    private int dfs(int i, int j, int[] a) {
+        if (memo[i][j] != -1) {
+            return memo[i][j];
+        }
+        if (i == 0) {
+            if (j == 0) {
+                return 0;
+            }
+            int lb = j & -j;
+            return memo[i][j] = dfs(i, j & ~(lb * 3), a) + 1;
+        }
+        // 第i排空着
+        int res = dfs(i - 1, a[i - 1], a);
+        // 枚举j的子集s
+        for (int s = j; s > 0; s = (s - 1) & j) {
+            if ((s & (s >> 1)) == 0) {
+                int t = a[i - 1] & ~(s << 1 | s >> 1);
+                res = Math.max(res, dfs(i - 1, t, a) + Integer.bitCount(s));
+            }
+        }
+        return memo[i][j] = res;
+    }
+
+    public int isWinner(int[] player1, int[] player2) {
+        int sum1 = getSum(player1);
+        int sum2 = getSum(player2);
+        return sum1 > sum2 ? 1 : sum1 == sum2 ? 0 : 2;
+    }
+
+    private int getSum(int[] player1) {
+        int count = 0;
+        int sum = 0;
+        for (int i : player1) {
+            if (count == 0) {
+                sum += i;
+            } else {
+                count--;
+                sum += 2 * i;
+            }
+
+            if (i == 10) {
+                count = 2;
+            }
+        }
+        return sum;
+    }
+
+    public int buyChoco(int[] prices, int money) {
+        if (prices.length == 1) {
+            return money;
+        }
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+        for (int price : prices) {
+            heap.offer(price);
+        }
+        int sum = 0;
+        for (int i = 0; i < 2; i++) {
+            sum += heap.poll();
+        }
+        return money >= sum ? money - sum : money;
+    }
+
     @Test
     public void test() {
         longestAlternatingSubarray(new int[]{3, 2, 5, 4}, 5);
+    }
+
+    @Test
+    public void testMapMerge() {
+        Map<Integer, Set<Integer>> map1 = new HashMap<>();
+        map1.put(1, Sets.newHashSet(2, 3, 4));
+        map1.put(2, Sets.newHashSet(7, 8, 9));
+
+        Map<Integer, Set<Integer>> map2 = new HashMap<>();
+        map2.put(1, Sets.newHashSet(4, 5, 6));
+
+        map1.forEach(
+                (key, value) ->
+                        map2.merge(key, value,
+                                (v1, v2) -> {
+                                    Set<Integer> mergeSet = new HashSet<>();
+                                    mergeSet.addAll(v1);
+                                    mergeSet.addAll(v2);
+                                    return mergeSet;
+                                }));
+        System.out.println(map2);
+    }
+
+    @Test
+    public void test123() {
+        ArrayList<Stuedent> a = new ArrayList<>();
+        Map<Integer, List<String>> collect = a.stream().collect(
+                Collectors.groupingBy(Stuedent::getId,
+                        Collectors.mapping(Stuedent::getName,
+                                Collectors.toList())));
+        System.out.println(collect);
+    }
+
+    class Stuedent {
+        private Integer id;
+        private String name;
+
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 
 }

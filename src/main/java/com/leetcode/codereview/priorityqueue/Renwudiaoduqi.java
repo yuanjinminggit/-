@@ -331,7 +331,7 @@ public class Renwudiaoduqi {
         predp = new int[n];
         sufdp = new int[n];
         Arrays.fill(predp, -1);
-        Arrays.fill(sufdp,-1);
+        Arrays.fill(sufdp, -1);
         getLISArray(nums, predp);
         int[] reversed = reverse(nums);
         getLISArray(reversed, sufdp);
@@ -358,7 +358,7 @@ public class Renwudiaoduqi {
     private void getLISArray(int[] nums, int[] predp) {
         int n = nums.length;
         for (int i = 0; i < n; i++) {
-            dfsgetLISArray(i, predp,nums);
+            dfsgetLISArray(i, predp, nums);
         }
     }
 
@@ -373,6 +373,24 @@ public class Renwudiaoduqi {
             }
         }
         return predp[i] = max + 1;
+    }
+
+    public String dayOfTheWeek(int day, int month, int year) {
+        String[] week = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+        int[] nums = new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        int ans = 3;
+        for (int i = 1971; i < year; i++) {
+            boolean isLeap = (i % 4 == 0 && i % 100 != 0) || i % 400 == 0;
+            ans += isLeap ? 366 : 365;
+        }
+        for (int i = 1; i < month; i++) {
+            ans += nums[i - 1];
+            if (i == 2 && ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)) {
+                ans++;
+            }
+        }
+        ans += day;
+        return week[ans % 7];
     }
 
     @Test
