@@ -11,11 +11,21 @@ public class BubbleSort implements Sort {
         this.bubbleSort(nums);
     }
 
+//    private void bubbleSort(int[] nums) {
+//        for (int i = 1; i < nums.length; i++) {
+//            for (int j = 1; j < nums.length - i; j++) {
+//                if (nums[j] < nums[j - 1]) {
+//                    swap(nums, j, j - 1);
+//                }
+//            }
+//        }
+//    }
+
     private void bubbleSort(int[] nums) {
-        for (int i = 1; i < nums.length; i++) {
-            for (int j = 1; j < nums.length - i; j++) {
-                if (nums[j] < nums[j - 1]) {
-                    swap(nums, j, j - 1);
+        for (int j = 0; j < nums.length - 1; j++) {
+            for (int i = 1; i < nums.length - j; i++) {
+                if (nums[i] < nums[i - 1]) {
+                    swap(nums, i, i - 1);
                 }
             }
         }
@@ -29,7 +39,6 @@ public class BubbleSort implements Sort {
         nums[i] = nums[j];
         nums[j] = a;
     }
-
 
     @Test
     public void test() {

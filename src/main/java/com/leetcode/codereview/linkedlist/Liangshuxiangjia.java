@@ -3,9 +3,9 @@ package com.leetcode.codereview.linkedlist;
 import com.leetcode.codereview.simpleConstruct.ListNode;
 import com.leetcode.codereview.simpleConstruct.TreeNode;
 
+import java.util.ArrayDeque;
 
 public class Liangshuxiangjia {
-
 
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         int carryBit = 0;
@@ -25,7 +25,6 @@ public class Liangshuxiangjia {
         }
         return head.next;
     }
-
 
     public ListNode mergeTwoLists1(ListNode list1, ListNode list2) {
         ListNode dummyNode = new ListNode(-1);
@@ -49,7 +48,6 @@ public class Liangshuxiangjia {
         return dummyNode.next;
     }
 
-
     public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
         if (list1 == null) {
             return list2;
@@ -68,7 +66,6 @@ public class Liangshuxiangjia {
 
     }
 
-
     public ListNode mergeKLists(ListNode[] lists) {
         if (lists.length == 0) {
             return null;
@@ -78,7 +75,6 @@ public class Liangshuxiangjia {
         }
         return mergeKLists(lists, 0, lists.length - 1);
     }
-
 
     private ListNode mergeKLists(ListNode[] lists, int l, int r) {
         if (l >= r) {
@@ -100,7 +96,6 @@ public class Liangshuxiangjia {
         head.next = swapPairs(node);
         return head;
     }
-
 
     public ListNode reverseKGroup(ListNode head, int k) {
         ListNode move = head;
@@ -153,7 +148,6 @@ public class Liangshuxiangjia {
         return newHead;
     }
 
-
     public ListNode deleteDuplicates(ListNode head) {
         if (head == null || head.next == null) {
             return head;
@@ -165,7 +159,6 @@ public class Liangshuxiangjia {
             return head;
         }
     }
-
 
     public ListNode partition(ListNode head, int x) {
         ListNode dummy = new ListNode(-1);
@@ -188,7 +181,6 @@ public class Liangshuxiangjia {
         return dummy.next;
     }
 
-
     public ListNode removeElements(ListNode head, int val) {
         if (head == null) {
             return null;
@@ -199,7 +191,6 @@ public class Liangshuxiangjia {
         head.next = removeElements(head.next, val);
         return head;
     }
-
 
     public ListNode reverseBetween(ListNode head, int left, int right) {
         ListNode dummy = new ListNode(-1);
@@ -268,7 +259,6 @@ public class Liangshuxiangjia {
         return pre;
     }
 
-
     private int getLength0(ListNode head) {
         int length = 0;
         while (head != null) {
@@ -277,7 +267,6 @@ public class Liangshuxiangjia {
         }
         return length;
     }
-
 
     public ListNode insertionSortList1(ListNode head) {
         if (head.next == null) {
@@ -340,5 +329,135 @@ public class Liangshuxiangjia {
         return dummy.next;
     }
 
+    public ListNode removeNodes1(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        head.next = removeNodes1(head.next);
+        if (head.next != null && head.val < head.next.val) {
+            return head.next;
+        } else {
+            return head;
+        }
+    }
+
+    public ListNode removeNodes2(ListNode head) {
+        ArrayDeque<ListNode> stack = new ArrayDeque<>();
+        for (; head != null; head = head.next) {
+            stack.push(head);
+        }
+        for (; !stack.isEmpty(); stack.pop()) {
+            if (head == null || stack.peek().val >= head.val) {
+                stack.peek().next = head;
+                head = stack.peek();
+            }
+        }
+        return head;
+    }
+
+    public ListNode removeNodes(ListNode head) {
+        ArrayDeque<ListNode> stack = new ArrayDeque<>();
+        ListNode cur = head;
+        while (cur != null) {
+            while (!stack.isEmpty() && cur.val > stack.peekLast().val) {
+                stack.pollLast();
+            }
+            stack.offerLast(cur);
+            cur = cur.next;
+        }
+        if (stack.isEmpty()) {
+            return null;
+        }
+        head = stack.pollFirst();
+        cur = head;
+        while (!stack.isEmpty()) {
+            cur.next = stack.pollFirst();
+            cur = cur.next;
+        }
+        return head;
+    }
+
+    public int maximumRows(int[][] matrix, int numSelect) {
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[] mask = new int[m];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                mask[i] += matrix[i][j] << (n - j - 1);
+            }
+        }
+        int res = 0;
+        int cur = 0;
+        int limit = (1 << n);
+        while (++cur < limit) {
+            if (Integer.bitCount(cur) != numSelect) {
+                continue;
+            }
+            int t = 0;
+            for (int j = 0; j < m; j++) {
+                if ((mask[j] & cur) == mask[j]) {
+                    ++t;
+                }
+            }
+            res = Math.max(res, t);
+        }
+        return res;
+    }
+
+    public int[] canSeePersonsCount(int[] heights) {
+        int n = heights.length;
+        ArrayDeque<Integer> stack = new ArrayDeque<>();
+        int[] res = new int[n];
+        for (int i = heights.length - 1; i >= 0; i--) {
+            while (!stack.isEmpty() && heights[i] > stack.peek()) {
+                stack.pop();
+                res[i]++;
+            }
+            if (!stack.isEmpty()) {
+                res[i]++;
+            }
+            stack.push(heights[i]);
+        }
+        return res;
+    }
+
+    public ListNode insertGreatestCommonDivisors(ListNode head) {
+        ListNode node = head;
+        while (node.next != null) {
+            node.next = new ListNode(getGCD(node.val, node.next.val), node.next);
+            node = node.next.next;
+        }
+        return head;
+    }
+
+    private int getGCD(int max, int min) {
+        if (max < min) {
+            return getGCD(min, max);
+        }
+        if (max % min == 0) {
+            return min;
+        }
+
+        return getGCD(max % min, min);
+    }
+
+    public boolean canConstruct(String ransomNote, String magazine) {
+        if (ransomNote.length() > magazine.length()) {
+            return false;
+        }
+        int[] cnt = new int[26];
+        char[] charArray = magazine.toCharArray();
+        for (char c : charArray) {
+            cnt[c - 'a']++;
+        }
+        char[] ransomNoteCharArray = ransomNote.toCharArray();
+        for (char c : ransomNoteCharArray) {
+            cnt[c - 'a']--;
+            if (cnt[c - 'a'] < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }

@@ -257,7 +257,56 @@ public class GroupingCycle {
         }
     }
 
+    public int minOperationsMaxProfit1(int[] customers, int boardingCost, int runningCost) {
+        int max = Integer.MIN_VALUE;
+        int waitingNum = 0;
+        int profit = 0;
+        int on = 0;
+        int res = 0;
+        for (int i = 0; i < customers.length; i++) {
+            if (waitingNum + customers[i] >= 4) {
+                waitingNum = waitingNum - 4 + customers[i];
+                on += 4;
+            } else {
+                on += waitingNum + customers[i];
+                waitingNum = 0;
+            }
+            profit = on * boardingCost - (i + 1) * runningCost;
+            if (profit > max) {
+                max = profit;
+                res = i + 1;
+            }
+        }
+        int i = customers.length + 1;
+        while (waitingNum > 0) {
+            on += waitingNum - 4 >= 0 ? 4 : waitingNum;
+            waitingNum = waitingNum >= 4 ? waitingNum - 4 : 0;
+            profit = on * boardingCost - i * runningCost;
+            if (profit > max) {
+                max = profit;
+                res = i + 1;
+            }
+            i++;
+        }
+        return max < 0 ? -1 : res;
+    }
 
+    public int minOperationsMaxProfit(int[] customers, int boardingCost, int runningCost) {
+        int len = customers.length, customer = 0, cost = 0, max = 0, ans = -1;
+        for (int i = 0; i < len || customer > 0; i++) {
+            if (i < len) {
+                customer += customers[i];
+            }
+            int minCus = Math.min(customer, 4);
+            cost += minCus * boardingCost - runningCost;
+            customer -= minCus;
+            if (max < cost) {
+                max = cost;
+                ans = i + 1;
+            }
+        }
+        return ans;
+    }
 
     @Test
     public void test() {
