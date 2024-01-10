@@ -736,6 +736,106 @@ public class Qiegedangao {
         return res;
     }
 
+    public int numberOfBoomerangs(int[][] points) {
+        int ans = 0;
+        HashMap<Integer, Integer> cnt = new HashMap<>();
+        for (int[] p1 : points) {
+            cnt.clear();
+            for (int[] p2 : points) {
+                int d2 = (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]);
+                Integer i = cnt.getOrDefault(d2, 0);
+                ans += 2 * i;
+                cnt.put(d2, i + 1);
+            }
+        }
+        return ans;
+    }
+
+    private int[] dp;
+
+    public int minExtraChar(String s, String[] dictionary) {
+        HashSet<String> set = new HashSet<>();
+        for (String string : dictionary) {
+            set.add(string);
+        }
+        int len = s.length();
+        dp = new int[len];
+        Arrays.fill(dp, -1);
+        return dfsminExtraChar(len - 1, s, set);
+    }
+
+    private int dfsminExtraChar(int idx, String s, HashSet<String> set) {
+        if (idx < 0) {
+            return 0;
+        }
+        if (dp[idx] != -1) {
+            return dp[idx];
+        }
+        int min = dfsminExtraChar(idx - 1, s, set) + 1;
+        for (int i = 0; i <= idx; i++) {
+            if (set.contains(s.substring(i, idx + 1))) {
+                min = Math.min(dfsminExtraChar(i - 1, s, set), min);
+            }
+        }
+        return dp[idx] = min;
+    }
+
+    public int minLength1(String s) {
+        char[] charArray = s.toCharArray();
+        return minLength(charArray, s.length());
+    }
+
+    private int minLength(char[] charArray, int length) {
+        String s = getAns(charArray, length);
+        if (s.length() == length) {
+            return length;
+        }
+        return minLength(s.toCharArray(), s.length());
+    }
+
+    private String getAns(char[] charArray, int ans) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < charArray.length; i++) {
+            if (charArray[i] == 'A') {
+                if (i + 1 < charArray.length && charArray[i + 1] == 'B') {
+                    i++;
+                    ans -= 2;
+                    continue;
+                }
+            }
+
+            if (charArray[i] == 'C') {
+                if (i + 1 < charArray.length && charArray[i + 1] == 'D') {
+                    i++;
+                    ans -= 2;
+                    continue;
+                }
+            }
+            sb.append(charArray[i]);
+        }
+        return sb.toString();
+    }
+
+    public int minLength2(String s) {
+        while (s.contains("AB") || s.contains("CD")) {
+            s = s.replace("AB", "").replace("CD", "");
+        }
+        return s.length();
+    }
+
+    public int minLength(String s) {
+        ArrayDeque<Character> stack = new ArrayDeque<>();
+        char[] charArray = s.toCharArray();
+        for (char c : charArray) {
+            if (!stack.isEmpty() && ((stack.peek() == 'A' && c == 'B') || (stack.peek() == 'C' && c == 'D'))) {
+                stack.pop();
+            } else {
+                stack.push(c);
+            }
+        }
+        return stack.size();
+    }
+
     @Test
     public void test() {
         nextBeautifulNumber(1000);
