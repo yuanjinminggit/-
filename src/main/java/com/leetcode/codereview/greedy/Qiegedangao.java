@@ -1,8 +1,21 @@
 package com.leetcode.codereview.greedy;
 
+import com.leetcode.codereview.simpleConstruct.ListNode;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class Qiegedangao {
     public int maxArea(int h, int w, int[] ho, int[] ve) {
@@ -836,9 +849,89 @@ public class Qiegedangao {
         return stack.size();
     }
 
-    @Test
-    public void test() {
-        nextBeautifulNumber(1000);
+    public int addMinimum(String word) {
+        char[] s = word.toCharArray();
+        int ans = s[0] + 2 - s[s.length - 1];
+        for (int i = 1; i < s.length; i++) {
+            ans += (s[i] + 2 - s[i - 1]) % 3;
+        }
+        return ans;
     }
+
+    public int countWords(String[] words1, String[] words2) {
+        HashMap<String, Integer> freq1 = new HashMap<>();
+        HashMap<String, Integer> freq2 = new HashMap<>();
+        for (String w : words1) {
+            freq1.put(w, freq1.getOrDefault(w, 0) + 1);
+        }
+        for (String w : words2) {
+            freq2.put(w, freq2.getOrDefault(w, 0) + 1);
+        }
+        int res = 0;
+        for (String w : freq1.keySet()) {
+            if (freq1.get(w) == 1 && freq2.getOrDefault(w, 0) == 1) {
+                res++;
+            }
+        }
+        return res;
+    }
+
+    private static int N = 26;
+
+    public String repeatLimitedString(String s, int repeatLimit) {
+        int[] count = new int[N];
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i) - 'a']++;
+        }
+        StringBuilder ret = new StringBuilder();
+        int m = 0;
+        for (int i = N - 1, j = N - 2; i >= 0 && j >= 0; ) {
+            if (count[i] == 0) {
+                m = 0;
+                i--;
+            } else if (m < repeatLimit) {
+                count[i]--;
+                ret.append((char) ('a' + i));
+                m++;
+            } else if (j >= i || count[j] == 0) {
+                j--;
+            } else {
+                count[j]--;
+                ret.append((char) ('a' + j));
+                m = 0;
+            }
+        }
+        return ret.toString();
+    }
+
+    public ListNode deleteDuplicates1(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        if (head.val == head.next.val) {
+            return deleteDuplicates(head.next);
+        }
+        head.next = deleteDuplicates(head.next);
+        return head;
+    }
+
+    public ListNode deleteDuplicates(ListNode head) {
+        if (head == null) {
+            return head;
+        }
+        ListNode cur = head;
+        while (cur.next != null) {
+            if (cur.val == cur.next.val) {
+                cur.next = cur.next.next;
+            } else {
+                cur = cur.next;
+            }
+        }
+        return head;
+    }
+
+
+    @Test
+    public void test() {}
 
 }

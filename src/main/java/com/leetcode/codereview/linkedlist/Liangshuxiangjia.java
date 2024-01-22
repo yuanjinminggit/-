@@ -460,4 +460,26 @@ public class Liangshuxiangjia {
         return true;
     }
 
+    public ListNode ideleteDuplicates1(ListNode head) {
+        if (head == null) {
+            return head;
+        }
+        ListNode dummy = new ListNode(0, head);
+        ListNode cur = dummy;
+        while (cur.next != null && cur.next.next != null) {
+            if (cur.next.val == cur.next.next.val) {
+                int x = cur.next.val;
+                // 调整指针指向
+                while (cur.next != null && cur.next.val == x) {
+                    cur.next = cur.next.next;
+                }
+            } else {
+                // 向后遍历
+                cur = cur.next;
+            }
+        }
+        return dummy.next;
+    }
+
+
 }
