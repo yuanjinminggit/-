@@ -2,8 +2,11 @@ package com.leetcode.codereview.binarysearch;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 
 public class Xuanzhuanpaixushuzu {
@@ -372,6 +375,166 @@ public class Xuanzhuanpaixushuzu {
                 left = mid + 1;
             }
         }
-        return left*4;
+        return left * 4;
     }
+
+    public int maxNumberOfAlloys(int n, int k, int budget, List<List<Integer>> composition, List<Integer> Stock, List<Integer> Cost) {
+        int ans = 0;
+        int mx = Collections.min(Stock) + budget;
+        int[] stock = Stock.stream().mapToInt(i -> i).toArray();
+        int[] cost = Cost.stream().mapToInt(i -> i).toArray();
+        for (List<Integer> Comp : composition) {
+            int[] comp = Comp.stream().mapToInt(i -> i).toArray();
+            int left = ans, right = mx + 1;
+            while (left < right) {
+                int mid = left + (right - left + 1) / 2;
+                boolean ok = true;
+                long money = 0;
+                for (int i = 0; i < n; i++) {
+                    if (stock[i] < (long) comp[i] * mid) {
+                        money += ((long) comp[i] * mid - stock[i]) * cost[i];
+                        if (money > budget) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                }
+                if (ok) {
+                    left = mid;
+                } else {
+                    right = mid - 1;
+                }
+            }
+            ans = left;
+        }
+        return ans;
+    }
+
+
+    public boolean canMeasureWater(int x, int y, int z) {
+        if (z == 0) {
+            return true;
+        }
+        if (x + y < z) {
+            return false;
+        }
+
+        State initState = new State(0, 0);
+        LinkedList<State> queue = new LinkedList<>();
+        HashSet<State> visited = new HashSet<>();
+        queue.offer(initState);
+        visited.add(initState);
+        while (!queue.isEmpty()) {
+            State head = queue.poll();
+            int curX = head.getX();
+            int curY = head.getY();
+            if (curX == z || curY == z || curY + curX == z) {
+                return true;
+            }
+            List<State> nextStates = getNextStates(curX, curY, x, y);
+            for (State nextState : nextStates) {
+                if (!visited.contains(nextState)) {
+                    queue.offer(nextState);
+                    visited.add(nextState);
+                }
+            }
+        }
+        return false;
+    }
+
+    private List<State> getNextStates(int curX, int curY, int x, int y) {
+        ArrayList<State> nextStates = new ArrayList<>(8);
+
+        // 1. 倒满x
+        State state1 = new State(x, curY);
+        // 2.倒满y
+        State state2 = new State(curX, y);
+
+        // x清空
+        State state3 = new State(0, curY);
+        // y清空
+        State state4 = new State(curX, 0);
+
+        // x倒y
+        State state5 = new State(curX - (y - curY), y);
+        State state6 = new State(0, curY + curX);
+        // y倒x
+        State state7 = new State(x, curY - (x - curX));
+        State state8 = new State(curX + curY, 0);
+        // 加水条件
+        if (curX < x) {
+            nextStates.add(state1);
+        }
+        if (curY < y) {
+            nextStates.add(state2);
+        }
+        // 倒掉条件
+        if (curX > 0) {
+            nextStates.add(state3);
+        }
+        if (curY > 0) {
+            nextStates.add(state4);
+        }
+        // 倒水条件
+        if (curX + curY > y) {
+            nextStates.add(state5);
+        }
+        if (curX + curY > x) {
+            nextStates.add(state7);
+        }
+
+        if (curX + curY < y) {
+            nextStates.add(state6);
+        }
+        if (curX + curY < x) {
+            nextStates.add(state8);
+        }
+        return nextStates;
+    }
+
+    private class State {
+        private int x;
+        private int y;
+
+        public State(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        @Override
+        public String toString() {
+            return "State{" +
+                    "x=" + x +
+                    ", y=" + y +
+                    '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            State state = (State) o;
+            return x == state.x &&
+                    y == state.y;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y);
+        }
+    }
+
+
 }

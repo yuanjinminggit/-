@@ -482,4 +482,7 @@ public class SmallestWay {
         return -1;
     }
 
+
+
+
 }

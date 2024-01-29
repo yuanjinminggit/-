@@ -14,7 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Random;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 
 public class Qiegedangao {
@@ -930,8 +932,224 @@ public class Qiegedangao {
         return head;
     }
 
+    public int maximumSwap(int num) {
+        String s = String.valueOf(num);
+        char[] charArray = s.toCharArray();
+        for (int i = 0; i < charArray.length; i++) {
+            int max = i;
+            boolean meet = false;
+            for (int j = i + 1; j < charArray.length; j++) {
+                if (!meet && charArray[j] > charArray[max]) {
+                    max = j;
+                    meet = true;
+                } else if (meet && charArray[j] >= charArray[max]) {
+                    max = j;
+                }
+            }
+            if (max != i) {
+                char tmp = charArray[i];
+                charArray[i] = charArray[max];
+                charArray[max] = tmp;
+                break;
+            }
+        }
+        return Integer.parseInt(new String(charArray));
+    }
+
+    public int alternatingSubarray1(int[] nums) {
+        int maxLength = -1;
+        int before = 0;
+        int start = 0;
+        for (int i = 1; i < nums.length; i++) {
+            if (Math.abs(nums[i] - nums[i - 1]) == 1) {
+                if (nums[i] - nums[i - 1] == 1 && (before == 0 || before == -1)) {
+                    if (before == 0) {
+                        start = i - 1;
+                    }
+                    before = 1;
+                    maxLength = Math.max(maxLength, i - start + 1);
+                } else if (nums[i] - nums[i - 1] == -1 && (before == 0 || before == 1)) {
+                    if (before == 0) {
+                        start = i - 1;
+                    }
+                    before = -1;
+                    maxLength = Math.max(maxLength, i - start + 1);
+                } else {
+                    before = 0;
+                }
+                if (before == 0) {
+                    i--;
+                }
+            } else {
+                before = 0;
+            }
+        }
+        return maxLength;
+    }
+
+    public int alternatingSubarray(int[] nums) {
+        int ans = -1;
+        int i = 0, n = nums.length;
+        while (i < n - 1) {
+            if (nums[i + 1] - nums[i] != 1) {
+                i++;
+                continue;
+            }
+            int i0 = i;
+            i += 2;
+            while (i < n && nums[i] == nums[i - 2]) {
+                i++;
+            }
+            ans = Math.max(ans, i - i0);
+            i--;
+        }
+        return ans;
+    }
+
+    // 暴力
+    public long maximumSumOfHeights3(List<Integer> maxHeights) {
+        long max = 0;
+        for (int i = 0; i < maxHeights.size(); i++) {
+            long sum = maxHeights.get(i);
+            sum += getSumBefore(maxHeights, i);
+            sum += getSumAfter(maxHeights, i);
+            max = Math.max(max, sum);
+        }
+        return max;
+    }
+
+    public int sumIndicesWithKSetBits(List<Integer> nums, int k) {
+        int ans = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            if (bigCount(nums.get(i)) == k) {
+                ans += nums.get(i);
+            }
+        }
+        return ans;
+    }
+
+    private int bigCount(int x) {
+        int cnt = 0;
+        while (x != 0) {
+            cnt += (x % 2);
+            x /= 2;
+        }
+        return cnt;
+    }
+
+    private long getSumAfter(List<Integer> maxHeights, int idx) {
+        if (idx >= maxHeights.size() - 1) {
+            return 0;
+        }
+        long sum = 0;
+        int max = maxHeights.get(idx);
+        for (int i = idx + 1; i < maxHeights.size(); i++) {
+            max = Math.min(max, maxHeights.get(i));
+            sum += max;
+        }
+        return sum;
+    }
+
+    private long getSumBefore(List<Integer> maxHeights, int idx) {
+        if (idx <= 0) {
+            return 0;
+        }
+        long sum = 0;
+        int max = maxHeights.get(idx);
+        for (int i = idx - 1; i >= 0; i--) {
+            max = Math.min(max, maxHeights.get(i));
+            sum += max;
+        }
+        return sum;
+    }
+
+    public long maximumSumOfHeights(List<Integer> maxHeights) {
+        long res = 0;
+        int n = maxHeights.size();
+        long[] pre = new long[n];
+        long[] suff = new long[n];
+        Stack<Integer> stack1 = new Stack<>();
+        Stack<Integer> stack2 = new Stack<>();
+        for (int i = 0; i < n; i++) {
+            while (!stack1.isEmpty() && maxHeights.get(stack1.peek()) > maxHeights.get(i)) {
+                stack1.pop();
+            }
+            if (stack1.isEmpty()) {
+                pre[i] = (long) (i + 1) * maxHeights.get(i);
+            } else {
+                pre[i] = pre[stack1.peek()] + (long) (i - stack1.peek()) * maxHeights.get(i);
+            }
+            stack1.push(i);
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            while (!stack2.isEmpty() && maxHeights.get(stack2.peek()) > maxHeights.get(i)) {
+                stack2.pop();
+            }
+            if (stack2.isEmpty()) {
+                suff[i] = (long) (n - i) * maxHeights.get(i);
+            } else {
+                suff[i] = suff[stack2.peek()] + (long) (stack2.peek() - i) * maxHeights.get(i);
+            }
+            stack2.push(i);
+        }
+        for (int i = 0; i < n; i++) {
+            res = Math.max(res, pre[i] + suff[i] - maxHeights.get(i));
+        }
+        return res;
+    }
+
+    int[][] pairs;
+    int[] cache;
+
+    public int findLongestChain(int[][] pairs) {
+        // 按照起点排序
+        Arrays.sort(pairs, (a, b) -> a[0] - b[0]);
+        int n = pairs.length;
+        this.pairs = pairs;
+        cache = new int[n];
+        return dfs(n - 1);
+    }
+
+    // 以pairs【i】为结尾的最长链长
+    private int dfs(int i) {
+        if (i < 0) {
+            return 0;
+        }
+        if (cache[i] != 0) {
+            return cache[i];
+        }
+        // 最少为1
+        int max = 1;
+        // 起点小于当前起点
+        for (int j = 0; j < i; j++) {
+            if (pairs[i][0] > pairs[j][1]) {
+                // 取所有链最长的一条
+                max = Math.max(dfs(j) + 1, max);
+            }
+        }
+        return cache[i] = max;
+    }
 
     @Test
-    public void test() {}
+    public void test() {
+        String characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+";
+        String randomNumber = "";
+        Random random = new Random();
+
+        for (int i = 0; i < 6; i++) {
+            int index = random.nextInt(characters.length());
+            char randomChar = characters.charAt(index);
+            randomNumber += randomChar;
+        }
+
+        String hostPassword = "T@1" + randomNumber + "22323dweurefhiufdsfpr";
+        System.out.println("randomNumber = " + randomNumber);
+        System.out.println("hostPassword = " + hostPassword);
+
+        if (hostPassword != null && hostPassword.startsWith("T@1")) {
+            String modifiedPassword = hostPassword.substring(0, 3) + hostPassword.substring(9);
+            System.out.println("modifiedHostPassword = " + modifiedPassword);
+        }
+    }
 
 }
