@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -1099,9 +1098,8 @@ public class Qiegedangao {
     }
 
     int[][] pairs;
-    int[] cache;
 
-    public int findLongestChain(int[][] pairs) {
+    public int findLongestChain1(int[][] pairs) {
         // 按照起点排序
         Arrays.sort(pairs, (a, b) -> a[0] - b[0]);
         int n = pairs.length;
@@ -1110,7 +1108,7 @@ public class Qiegedangao {
         return dfs(n - 1);
     }
 
-    // 以pairs【i】为结尾的最长链长
+    // 以pairs【i】为结尾的最长链长，结果一定为最后一个元素
     private int dfs(int i) {
         if (i < 0) {
             return 0;
@@ -1130,26 +1128,208 @@ public class Qiegedangao {
         return cache[i] = max;
     }
 
+    public int findLongestChain2(int[][] pairs) {
+        int cur = Integer.MIN_VALUE, res = 0;
+        Arrays.sort(pairs, (a, b) -> a[1] - b[1]);
+        for (int[] p : pairs) {
+            if (cur < p[0]) {
+                cur = p[1];
+                res++;
+            }
+        }
+        return res;
+    }
+
+    public int findLongestChain(int[][] pairs) {
+        Arrays.sort(pairs, (a, b) -> a[0] - b[0]);
+
+        ArrayList<Integer> arr = new ArrayList<>();
+        for (int[] p : pairs) {
+            int x = p[0], y = p[1];
+            if (arr.isEmpty() || x > arr.get(
+                    arr.size() - 1)) {
+                arr.add(y);
+            } else {
+                int idx = binarySearch(arr, x);
+                arr.set(idx, Math.min(arr.get(idx), y));
+            }
+        }
+        return arr.size();
+    }
+
+    private int binarySearch(List<Integer> arr, int x) {
+        int low = 0, high = arr.size() - 1;
+        while (low < high) {
+            int mid = (low + high) / 2;
+            if (arr.get(mid) >= x) {
+                high = mid;
+            } else {
+                low = mid + 1;
+            }
+        }
+        return low;
+    }
+
+    public int minimumSeconds(List<Integer> nums) {
+        int n = nums.size();
+        HashMap<Integer, List<Integer>> pos = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            pos.computeIfAbsent(nums.get(i), k -> new ArrayList<>()).add(i);
+        }
+        int ans = n;
+        for (List<Integer> a : pos.values()) {
+            // 首尾相连
+            int mx = n - a.get(a.size() - 1) + a.get(0);
+            for (int i = 1; i < a.size(); i++) {
+                mx = Math.max(a.get(i) - a.get(i - 1), mx);
+            }
+            ans = Math.min(ans, mx);
+        }
+        return ans / 2;
+    }
+
+    public int[] distinctDifferenceArray(int[] nums) {
+        int n = nums.length;
+        int ans[] = new int[n];
+        HashSet<Integer> set = new HashSet<>();
+        int pre[] = new int[n];
+        for (int i = 0; i < nums.length; i++) {
+            set.add(nums[i]);
+            pre[i] = set.size();
+        }
+        set.clear();
+        int suf[] = new int[n];
+        for (int i = nums.length - 1; i >= 0; i--) {
+            suf[i] = set.size();
+            set.add(nums[i]);
+        }
+        for (int i = 0; i < n; i++) {
+            ans[i] = pre[i] - suf[i];
+        }
+        return ans;
+    }
+
+    public int countSubstrings(String s) {
+        char[] charArray = s.toCharArray();
+        int n = charArray.length;
+        check = new int[n][n];
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+                if (check(charArray, i, j) == 1) {
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+
+    private int[][] check;
+
+    private int check(char[] charArray, int i, int j) {
+        if (check[i][j] != 0) {
+            return check[i][j];
+        }
+        if (i == j) {
+            return check[i][j] = 1;
+        } else if (j == i + 1) {
+            return check[i][j] = charArray[i] == charArray[j] ? 1 : -1;
+        } else {
+            if (charArray[i] == charArray[j]) {
+                return check[i][j] = check(charArray, i + 1, j - 1);
+            } else {
+                return check[i][j] = -1;
+            }
+        }
+    }
+
+    public int stoneGameVI(int[] aliceValues, int[] bobValues) {
+        int n = aliceValues.length;
+        Integer[] ids = new Integer[n];
+        for (int i = 0; i < n; i++) {
+            ids[i] = i;
+        }
+        Arrays.sort(ids, (i, j) -> aliceValues[j] + bobValues[j] - aliceValues[i] - bobValues[i]);
+        int diff = 0;
+        for (int i = 0; i < n; i++) {
+            diff += i % 2 == 0 ? aliceValues[ids[i]] : -bobValues[ids[i]];
+        }
+        return Integer.compare(diff, 0);
+    }
+
+    public boolean canWinNim(int n) {
+        if (n <= 3) {
+            return true;
+        }
+        return n % 4 != 0;
+    }
+
+    int[] cache;
+
+    public int maxResult(int[] nums, int k) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+        pq.offer(new int[]{0, dp[0]});
+        for (int i = 1; i < n; i++) {
+            while (pq.peek()[0] < i - k) {
+                pq.poll();
+            }
+            dp[i] = nums[i] + pq.peek()[1];
+            pq.offer(new int[]{i, dp[i]});
+        }
+        return dp[n - 1];
+    }
+
+    public int magicTower(int[] nums) {
+        long sum = 0;
+        for (int num : nums) {
+            sum += num;
+        }
+        if (sum < 0) {
+            return -1;
+        }
+        int ans = 0;
+        long hp = 1;
+        PriorityQueue<Integer> heap = new PriorityQueue<>();
+        for (int x : nums) {
+            if (x < 0) {
+                heap.offer(x);
+            }
+            hp += x;
+            if (hp < 1) {
+                hp -= heap.poll();
+                ans++;
+            }
+        }
+        return ans;
+    }
+
+    private int count = 0;
+
+    private int magicTower(List<Integer> nums, int sum) {
+        if (nums.isEmpty()) {
+            return sum;
+        }
+        List<Integer> tmp = new ArrayList<>();
+        for (int i = 0; i < nums.size(); i++) {
+            if (sum + nums.get(i) < 0) {
+                tmp.add(nums.get(i));
+                count++;
+                continue;
+            }
+            sum += nums.get(i);
+        }
+        if (nums.size() == tmp.size()) {
+            return Integer.MIN_VALUE;
+        }
+        return magicTower(tmp, sum);
+    }
+
     @Test
     public void test() {
-        String characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+";
-        String randomNumber = "";
-        Random random = new Random();
-
-        for (int i = 0; i < 6; i++) {
-            int index = random.nextInt(characters.length());
-            char randomChar = characters.charAt(index);
-            randomNumber += randomChar;
-        }
-
-        String hostPassword = "T@1" + randomNumber + "22323dweurefhiufdsfpr";
-        System.out.println("randomNumber = " + randomNumber);
-        System.out.println("hostPassword = " + hostPassword);
-
-        if (hostPassword != null && hostPassword.startsWith("T@1")) {
-            String modifiedPassword = hostPassword.substring(0, 3) + hostPassword.substring(9);
-            System.out.println("modifiedHostPassword = " + modifiedPassword);
-        }
+        magicTower(new int[]{100, 100, 100, -250, -60, -140, -50, -50, 100, 150});
     }
 
 }
