@@ -798,7 +798,7 @@ public class Xiangtongdeshu {
         boolean swap = true;
         while (!queue.isEmpty()) {
             int size = queue.size();
-            ArrayList<TreeNode> list = new ArrayList<>();
+            List<TreeNode> list = new ArrayList<>();
             for (int i = 0; i < size; i++) {
                 TreeNode node = queue.poll();
                 list.add(node);
@@ -851,4 +851,85 @@ public class Xiangtongdeshu {
         return root;
     }
 
+    int x;
+    TreeNode xParent;
+    int xDepth;
+
+    boolean xFound = false;
+
+    int y;
+    TreeNode yParent;
+    int yDepth;
+
+    boolean yFound = false;
+
+    public boolean isCousins2(TreeNode root, int x, int y) {
+        this.x = x;
+        this.y = y;
+        dfs(root, 0, null);
+        return xDepth == yDepth && xParent != yParent;
+    }
+
+    private void dfs(TreeNode node, int depth, TreeNode parent) {
+        if (node == null) {
+            return;
+        }
+
+        if (node.val == x) {
+            xParent = parent;
+            xFound = true;
+            xDepth = depth;
+
+        }
+        if (node.val == y) {
+            yParent = parent;
+            yFound = true;
+            yDepth = depth;
+        }
+        if (xFound && yFound) {
+            return;
+        }
+        dfs(node.left, depth + 1, node);
+        dfs(node.right, depth + 1, node);
+    }
+
+    public boolean isCousins1(TreeNode root, int x, int y) {
+        this.x = x;
+        this.y = y;
+        Queue<TreeNode> nodeQueue = new LinkedList<>();
+        Queue<Integer> depthQueue = new LinkedList<>();
+        nodeQueue.offer(root);
+        depthQueue.offer(0);
+        while (!nodeQueue.isEmpty()) {
+            TreeNode node = nodeQueue.poll();
+            Integer depth = depthQueue.poll();
+            if (node.left != null) {
+                nodeQueue.offer(node.left);
+                depthQueue.offer(depth + 1);
+                update(node.left, node, depth + 1);
+            }
+            if (node.right != null) {
+                nodeQueue.offer(node.right);
+                depthQueue.offer(depth + 1);
+                update(node.right, node, depth + 1);
+            }
+            if (xFound && yFound) {
+                break;
+            }
+        }
+        return xDepth == yDepth && xParent != yParent;
+    }
+
+    private void update(TreeNode node, TreeNode parent, int depth) {
+        if (node.val == x) {
+            xParent = parent;
+            xDepth = depth;
+            xFound = true;
+        }
+        if (node.val == y) {
+            yParent = parent;
+            yDepth = depth;
+            yFound = true;
+        }
+    }
 }

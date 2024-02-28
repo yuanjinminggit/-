@@ -17,6 +17,18 @@
         <java.version>8</java.version>
     </properties>
     <dependencies>
+
+        <dependency>
+            <groupId>com.ning</groupId>
+            <artifactId>async-http-client</artifactId>
+            <version>1.9.21</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.3.1</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -43,6 +55,12 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.70</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.linkedin.parseq</groupId>
+            <artifactId>parseq</artifactId>
+            <version>4.0.1</version>
         </dependency>
     </dependencies>
 
