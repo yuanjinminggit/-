@@ -1327,7 +1327,40 @@ public class Qiegedangao {
         return magicTower(tmp, sum);
     }
 
-    @Test
+    private int me[];
+
+    public boolean validPartition(int[] nums) {
+        me = new int[nums.length];
+        Arrays.fill(me, -1);
+        return validPartition(nums, 0);
+    }
+
+    private boolean validPartition(int[] nums, int i) {
+        if (i >= nums.length) {
+            return true;
+        }
+        if (me[i] != -1) {
+            return me[i] == 1;
+        }
+        if (i + 1 < nums.length && nums[i] == nums[i + 1]) {
+            if (i + 2 < nums.length && nums[i + 1] == nums[i + 2]) {
+                me[i] = validPartition(nums, i + 3) || validPartition(nums, i + 2) ? 1 : -1;
+                return me[i] == 1;
+            }
+            return (me[i] = validPartition(nums, i + 2) ? 1 : -1) == 1;
+        }
+        if (i + 2 < nums.length && nums[i] + 1 == nums[i + 1] && nums[i + 1] + 1 == nums[i + 2]) {
+            return (me[i] = validPartition(nums, i + 3) ? 1 : -1) == 1;
+        }
+
+        me[i] = -1;
+        return false;
+    }
+
+
+
+
+        @Test
     public void test() {
         magicTower(new int[]{100, 100, 100, -250, -60, -140, -50, -50, 100, 150});
     }

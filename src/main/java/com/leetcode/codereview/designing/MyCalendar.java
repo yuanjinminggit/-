@@ -1,4 +1,4 @@
-package com.leetcode.codereview.tree;
+package com.leetcode.codereview.designing;
 
 import java.util.TreeSet;
 

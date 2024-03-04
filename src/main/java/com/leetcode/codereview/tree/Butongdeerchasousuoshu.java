@@ -49,7 +49,6 @@ public class Butongdeerchasousuoshu {
         return dfsisValidBST(root.left, l, root.val) && dfsisValidBST(root.right, root.val, r);
     }
 
-
     public boolean containsNearbyDuplicate1(int[] nums, int k) {
         int len = nums.length;
         Integer[] idx = new Integer[len];
@@ -66,7 +65,6 @@ public class Butongdeerchasousuoshu {
         }
         return false;
     }
-
 
     public boolean containsNearbyDuplicate2(int[] nums, int k) {
         HashMap<Integer, Integer> map = new HashMap<>();
@@ -102,7 +100,6 @@ public class Butongdeerchasousuoshu {
         return false;
     }
 
-
     public boolean containsNearbyAlmostDuplicate1(int[] nums, int indexDiff, int valueDiff) {
         int n = nums.length;
         TreeSet<Long> set = new TreeSet<>();
@@ -119,7 +116,6 @@ public class Butongdeerchasousuoshu {
         }
         return false;
     }
-
 
     //暴力解法
     public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
@@ -159,7 +155,6 @@ public class Butongdeerchasousuoshu {
         dfskthSmallest(root.right, k);
     }
 
-
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         if (root == p || root == q) {
             return root;
@@ -171,7 +166,6 @@ public class Butongdeerchasousuoshu {
         }
         return root;
     }
-
 
     public class Codec {
 
@@ -194,7 +188,6 @@ public class Butongdeerchasousuoshu {
             dfsserialize(root.left, sb);
             dfsserialize(root.right, sb);
         }
-
 
         // Decodes your encoded data to tree.
         public TreeNode deserialize(String data) {
@@ -224,7 +217,6 @@ public class Butongdeerchasousuoshu {
         }
 
     }
-
 
     public TreeNode deleteNode(TreeNode root, int key) {
         if (root == null) {
@@ -258,7 +250,6 @@ public class Butongdeerchasousuoshu {
         return node;
     }
 
-
     public TreeNode increasingBST(TreeNode root) {
         LinkedList<Integer> list = new LinkedList<>();
         inorderDfs(root, list);
@@ -284,7 +275,6 @@ public class Butongdeerchasousuoshu {
         list.offer(root.val);
         inorderDfs(root.right, list);
     }
-
 
     public TreeNode bstFromPreorder(int[] preorder) {
         return dfsbstFromPreorder(preorder, 0, preorder.length - 1);
@@ -314,7 +304,6 @@ public class Butongdeerchasousuoshu {
         root.right = dfsbstFromPreorder(preorder, left + 1, r);
         return root;
     }
-
 
     class Node {
         public int val;
@@ -458,7 +447,6 @@ public class Butongdeerchasousuoshu {
         return ans;
     }
 
-
     public int maxLevelSum(TreeNode root) {
         LinkedList<TreeNode> queue = new LinkedList<>();
         queue.offer(root);
@@ -487,7 +475,6 @@ public class Butongdeerchasousuoshu {
         }
         return maxLevel;
     }
-
 
     public int goodNodes(TreeNode root) {
         return dfsgoodNodes(root, Integer.MIN_VALUE);
@@ -554,7 +541,6 @@ public class Butongdeerchasousuoshu {
 
     }
 
-
     public List<TreeNode> delNodes(TreeNode root, int[] to_delete) {
         if (root == null) {
             return new ArrayList<>();
@@ -591,7 +577,6 @@ public class Butongdeerchasousuoshu {
         return returnNode;
     }
 
-
     public TreeNode subtreeWithAllDeepest(TreeNode root) {
         dfssubtreeWithAllDeepest(root, 0);
         return deepNode;
@@ -614,11 +599,9 @@ public class Butongdeerchasousuoshu {
         return Math.max(left, right);
     }
 
-
     public boolean isSubPath1(ListNode head, TreeNode root) {
         return dfsisSubPath(head, root, head);
     }
-
 
     private boolean dfsisSubPath(ListNode headcur, TreeNode rootcur, ListNode head1) {
         if (headcur == null) {
@@ -658,10 +641,38 @@ public class Butongdeerchasousuoshu {
         return dfs(head.next, root.left) || dfs(head.next, root.right);
     }
 
+    public TreeNode replaceValueInTree(TreeNode root) {
+        root.val = 0;
+        ArrayDeque<TreeNode> queue = new ArrayDeque<>();
+        queue.offer(root);
+        while (!queue.isEmpty()) {
+            int sum = 0;
+            int size = queue.size();
+            for (TreeNode node : queue) {
+                if (node.left != null) {
+                    sum += node.left.val;
 
+                }
+                if (node.right != null) {
+                    sum += node.right.val;
 
-
-
+                }
+            }
+            while (size-- > 0) {
+                TreeNode node = queue.poll();
+                int sumOfxy = (node.left == null ? 0 : node.left.val) + (node.right == null ? 0 : node.right.val);
+                if (node.left != null) {
+                    node.left.val = sum - sumOfxy;
+                    queue.offer(node.left);
+                }
+                if (node.right != null) {
+                    node.right.val = sum - sumOfxy;
+                    queue.offer(node.right);
+                }
+            }
+        }
+        return root;
+    }
 
 
 }
