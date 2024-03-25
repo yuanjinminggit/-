@@ -1,0 +1,13 @@
+@startuml
+actor 大象  as f1
+participant bianque  as f2
+participant fastbot  as f3
+participant friday  as f4
+
+f1 -> f2: 消息回调
+f2 -> f4: 领域识别应用识别领域
+f2 -> f4: 问题类型应用识别问题类型
+f2 -> f3: 营销领域问题调用fastbot
+f2 -> f4: 其他领域问题调用friday
+
+@enduml

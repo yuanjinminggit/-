@@ -1,5 +1,7 @@
 package com.leetcode.codereview.memoizeddfs;
 
+import org.testng.annotations.Test;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -280,4 +282,65 @@ public class ZuiXiaoTiLiXiaoHaoLuJing {
         }
         return new String(arr);
     }
+
+    public int coinChange(int[] coins, int amount) {
+        this.coins = coins;
+        int n = coins.length;
+        memo = new int[n][amount + 1];
+        for (int[] row : memo) {
+            Arrays.fill(row, -1);
+        }
+        int ans = dfs(n - 1, amount);
+        return ans < Integer.MAX_VALUE / 2 ? ans : -1;
+    }
+
+    private int dfs(int i, int c) {
+        if (i < 0) return c == 0 ? 0 : Integer.MAX_VALUE / 2;
+        if (memo[i][c] != -1) return memo[i][c];
+        if (c < coins[i]) return memo[i][c] = dfs(i - 1, c);
+        return memo[i][c] = Math.min(dfs(i - 1, c), dfs(i, c - coins[i]) + 1);
+    }
+
+    public int distinctIntegers(int n) {
+        return n == 1 ? 1 : n - 1;
+    }
+
+    private int[] coins;
+    private int[][] memo;
+
+    public int change(int amount, int[] coins) {
+        memo = new int[amount + 1][coins.length];
+        for (int i = 0; i < amount + 1; i++) {
+            Arrays.fill(memo[i], -1);
+        }
+        this.coins = coins;
+        return dfsChange(amount, coins.length - 1);
+    }
+
+    private int dfsChange(int amount, int idx) {
+        if (amount == 0) {
+            return 1;
+        }
+        if (idx < 0) {
+            return 0;
+        }
+        if (memo[amount][idx] != -1) {
+            return memo[amount][idx];
+        }
+        int a = 0;
+        int b = 0;
+        if (amount >= coins[idx]) {
+            a = dfsChange(amount - coins[idx], idx);
+        }
+        b = dfsChange(amount, idx - 1);
+        return memo[amount][idx] = a + b;
+    }
+
+    @Test
+    public void test() {
+        List<Integer> list = Arrays.asList(1, 2, 3, 4);
+        List<Integer> integers = list.subList(0, 3);
+        System.out.println(integers);
+    }
+
 }
