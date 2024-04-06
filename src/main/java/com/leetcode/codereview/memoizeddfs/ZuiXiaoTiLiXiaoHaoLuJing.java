@@ -336,6 +336,34 @@ public class ZuiXiaoTiLiXiaoHaoLuJing {
         return memo[amount][idx] = a + b;
     }
 
+    private char[] s;
+    private char[] t;
+
+    private int[][] distance;
+
+    public int minDistance(String word1, String word2) {
+        s = word1.toCharArray();
+        t = word2.toCharArray();
+        distance = new int[s.length][t.length];
+        for (int i = 0; i < s.length; i++) {
+            Arrays.fill(distance[i], -1);
+        }
+        return minDistance(s.length - 1, t.length - 1);
+    }
+
+    private int minDistance(int i, int j) {
+        if (i < 0 || j < 0) {
+            return i < 0 ? j + 1 : i + 1;
+        }
+        if (distance[i][j] != -1) {
+            return distance[i][j];
+        }
+        if (s[i] == t[j]) {
+            return distance[i][j] = minDistance(i - 1, j - 1);
+        }
+        return distance[i][j] = (Math.min(Math.min(minDistance(i - 1, j), minDistance(i, j - 1)), minDistance(i - 1, j - 1)) + 1);
+    }
+
     @Test
     public void test() {
         List<Integer> list = Arrays.asList(1, 2, 3, 4);
