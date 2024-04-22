@@ -6,7 +6,6 @@ import java.util.*;
 
 public class zhiguzi {
 
-
     private int MOD = 1000000000 + 7;
 
     public int numRollsToTarget1(int n, int k, int target) {
@@ -50,7 +49,6 @@ public class zhiguzi {
         return mem[n][target];
     }
 
-
     public int numRollsToTarget(int n, int k, int target) {
         if (target < n || target > n * k) {
             return 0;
@@ -67,7 +65,6 @@ public class zhiguzi {
         }
         return mem[target];
     }
-
 
     public int punishmentNumber1(int n) {
         int res = 0;
@@ -97,7 +94,6 @@ public class zhiguzi {
         return false;
     }
 
-
     public int punishmentNumber3(int n) {
         int ans = 0;
         for (int i = 1; i <= n; i++) {
@@ -122,7 +118,6 @@ public class zhiguzi {
         return false;
     }
 
-
     static int[] f = new int[1010];
 
     static {
@@ -137,7 +132,6 @@ public class zhiguzi {
     public int punishmentNumber(int n) {
         return f[n];
     }
-
 
     public int maxSatisfaction1(int[] satisfaction) {
         int n = satisfaction.length;
@@ -226,7 +220,6 @@ public class zhiguzi {
 
     private int[][] mem;
 
-
     public int rob1(int[] nums) {
         int n = nums.length;
         cache = new int[n];
@@ -283,7 +276,6 @@ public class zhiguzi {
         return tg == n * n;
     }
 
-
     public boolean checkValidGrid(int[][] grid) {
         return dfscheckValidGrid(grid, 0, 0, 0, 0);
     }
@@ -307,7 +299,6 @@ public class zhiguzi {
 
         return false;
     }
-
 
     private int[] stones;
     private int sum;
@@ -336,7 +327,6 @@ public class zhiguzi {
         return mem[i][cur] = Math.min(r1, r2);
     }
 
-
     public int maxSubArray(int[] nums) {
         int len = nums.length;
         int max = Integer.MIN_VALUE;
@@ -347,7 +337,6 @@ public class zhiguzi {
         }
         return max;
     }
-
 
     private int dfsmaxSubArray(int[] nums, int idx) {
         if (idx == -1) {
@@ -360,7 +349,6 @@ public class zhiguzi {
         int num = dfsmaxSubArray(nums, idx - 1);
         return cache[idx] = num < 0 ? nums[idx] : num + nums[idx];
     }
-
 
     public int lengthOfLIS(int[] nums) {
         int len = nums.length;
@@ -389,7 +377,6 @@ public class zhiguzi {
         return cache[i] = max + 1;
     }
 
-
     public int maximumCostSubstring(String s, String chars, int[] vals) {
 
         HashMap<Character, Integer> map = new HashMap<>();
@@ -409,7 +396,6 @@ public class zhiguzi {
         return max;
     }
 
-
     private int dfsmaximumCostSubstring(String s, HashMap<Character, Integer> map, int i) {
         if (i < 0) {
             return 0;
@@ -427,7 +413,6 @@ public class zhiguzi {
         int pre = dfsmaximumCostSubstring(s, map, i - 1);
         return cache[i] = pre < 0 ? Math.max(0, val) : Math.max(pre + val, 0);
     }
-
 
     public int maxSubarraySumCircular1(int[] nums) {
         int len = nums.length;
@@ -475,7 +460,6 @@ public class zhiguzi {
         return sum == minS ? maxS : Math.max(maxS, sum - minS);
     }
 
-
     public boolean closeStrings(String word1, String word2) {
         if (word1.length() != word2.length()) {
             return false;
@@ -498,7 +482,6 @@ public class zhiguzi {
         return Arrays.equals(count1, count2);
     }
 
-
     public boolean carPooling(int[][] trips, int capacity) {
         int[] d = new int[1001];
         for (int[] t : trips) {
@@ -515,7 +498,6 @@ public class zhiguzi {
         }
         return true;
     }
-
 
     public int maxScore(int[] cardPoints, int k) {
         int sum = 0;
@@ -581,6 +563,23 @@ public class zhiguzi {
         return memo[i] = res;
     }
 
+    int n, res = 0;
+    int[] cost;
+
+    public int minIncrements(int n, int[] cost) {
+        this.n = n;
+        this.cost = cost;
+        dfs(1);
+        return res;
+    }
+
+    private int dfs(int i) {
+        if (2 * i > n) return cost[i - 1];
+        int left = dfs(2 * i);
+        int right = dfs(2 * i + 1);
+        res += Math.abs(left - right);
+        return cost[i - 1] + Math.max(left, right);
+    }
 
 }
 

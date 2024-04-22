@@ -5,6 +5,8 @@ import com.leetcode.codereview.httpclient.my.FridayHttpRequest;
 import com.leetcode.codereview.httpclient.my.FridayHttpResponseUtil;
 import com.leetcode.codereview.httpclient.my.bo.ConversationRequestBo;
 import com.leetcode.codereview.httpclient.my.bo.ConversationResponseBo;
+import com.leetcode.codereview.httpclient.my.bo.HumanOperatedTTRequestDto;
+import com.leetcode.codereview.httpclient.my.bo.HumanOperatedTTResultDto;
 import com.leetcode.codereview.httpclient.my.enums.UserTypeEnum;
 import com.linkedin.parseq.Task;
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
@@ -125,8 +127,41 @@ public class HttpClient5FridayHttpRequestImpl implements FridayHttpRequest {
 
     @Test
     public void test() {
-        ConversationResponseBo conversationResponseBo = getConversationMessageSync();
-        System.out.println(conversationResponseBo);
+//        ConversationResponseBo conversationResponseBo = getConversationMessageSync();
+//        System.out.println(conversationResponseBo);
+        HumanOperatedTTRequestDto humanOperatedTTRequestDto = new HumanOperatedTTRequestDto();
+        humanOperatedTTRequestDto.setAppId("1760921992229634074");
+        humanOperatedTTRequestDto.setConversationId("20240415151844_1772462227119755317_6310805");
+        humanOperatedTTRequestDto.setMessageId("1779771324395290692");
+        humanOperatedTTRequestDto.setUserId("123");
+        humanOperatedTTRequestDto.setToken("v1.1f7e9d24081646f0a02d400e6166b576.86400000.1713165504972-1666029264426266711");
+        System.out.println(JSONObject.toJSONString(humanOperatedTTRequestDto));
+        HumanOperatedTTResultDto humanOperatedTT = createHumanOperatedTT(humanOperatedTTRequestDto);
+
+        System.out.println(humanOperatedTT);
     }
+
+
+    public HumanOperatedTTResultDto createHumanOperatedTT(HumanOperatedTTRequestDto requestDto){
+
+        ClassicHttpRequest request = ClassicRequestBuilder.post(TT_URL)
+                .setEntity(new StringEntity(JSONObject.toJSONString(requestDto), ContentType.APPLICATION_JSON, UTF_8_CHARSET, false))
+                .build();
+        JsonNode jsonNode = sendRequestSync(request, response -> {
+            try {
+                final HttpEntity entity = response.getEntity();
+                String entiryString = EntityUtils.toString(entity, UTF_8_CHARSET);
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jn = objectMapper.readTree(entiryString);
+                EntityUtils.consume(entity);
+                return jn;
+            } finally {
+                response.close();
+            }
+        });
+        return FridayHttpResponseUtil.parseTTResult(jsonNode);
+    }
+
+
 
 }

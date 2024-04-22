@@ -8,6 +8,7 @@ public interface FridayHttpRequest {
     String UTF_8_CHARSET = "utf-8";
     String TOKEN_URL = "https://auth-ai.vip.sankuai.com/oauth/v2/token";
     String CONVERSATION_URL = "https://aigc.sankuai.com/conversation/v2/openapi";
+    String TT_URL = "https://auth-ai.vip.sankuai.com/conversation/feedback/open/like";
 
     // 获取token固定参数
     String CLIENT_ID = "pxbhLGdHe44D+KOAdvoIAacA/P0LoPP+/duhOOwr97Q=";

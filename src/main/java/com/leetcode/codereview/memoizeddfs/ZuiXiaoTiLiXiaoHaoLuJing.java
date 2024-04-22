@@ -2,6 +2,7 @@ package com.leetcode.codereview.memoizeddfs;
 
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -369,6 +370,164 @@ public class ZuiXiaoTiLiXiaoHaoLuJing {
         List<Integer> list = Arrays.asList(1, 2, 3, 4);
         List<Integer> integers = list.subList(0, 3);
         System.out.println(integers);
+    }
+
+    private static final int MX = 51;
+    private static final int[][] coprime = new int[MX][MX];
+
+    static {
+        // 预处理
+        // coprime[i]保存【1，mx）中与i互斥的所有元素
+        for (int i = 1; i < MX; i++) {
+            int k = 0;
+            for (int j = 1; j < MX; j++) {
+                if (gcd(i, j) == 1) {
+                    coprime[i][k++] = j;
+                }
+            }
+        }
+    }
+
+    public int[] getCoprimes(int[] nums, int[][] edges) {
+        int n = nums.length;
+        List<Integer>[] g = new ArrayList[n];
+        Arrays.setAll(g, i -> new ArrayList<>());
+        for (int[] e : edges) {
+            int x = e[0];
+            int y = e[1];
+            g[x].add(y);
+            g[y].add(x);
+        }
+        int[] ans = new int[n];
+        Arrays.fill(ans, -1);
+        int[] valDepth = new int[MX];
+        int[] valNodeId = new int[MX];
+        dfs(0, -1, 1, g, nums, ans, valDepth, valNodeId);
+        return ans;
+    }
+
+    private void dfs(int x, int fa, int depth, List<Integer>[] g, int[] nums, int[] ans, int[] valDepth, int[] valNodeId) {
+        int val = nums[x];
+
+        int maxDepth = 0;
+        for (int j : coprime[val]) {
+            if (j == 0) {
+                break;
+            }
+            if (valDepth[j] > maxDepth) {
+                maxDepth = valDepth[j];
+                ans[x] = valNodeId[j];
+            }
+        }
+        int tmpDepth = valDepth[val];
+        int tmpNodeId = valNodeId[val];
+
+        valDepth[val] = depth;
+        valNodeId[val] = x;
+
+        for (Integer y : g[x]) {
+            if (y != fa) {
+                dfs(y, x, depth + 1, g, nums, ans, valDepth, valNodeId);
+            }
+        }
+        valDepth[val] = tmpDepth;
+        valNodeId[val] = tmpNodeId;
+    }
+
+    private static int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+
+    public String maximumBinaryString(String binary) {
+        int n = binary.length();
+        char[] s = binary.toCharArray();
+        int j = 0;
+        for (int i = 0; i < n; i++) {
+            if (s[i] == '0') {
+                while (j <= i || (j < n && s[j] == '1')) {
+                    j++;
+                }
+                if (j < n) {
+                    s[j] = '1';
+                    s[i] = '1';
+                    s[i + 1] = '0';
+                }
+            }
+        }
+        return new String(s);
+    }
+
+    public int findChampion(int[][] grid) {
+        int ans = 0;
+        for (int i = 1; i < grid.length; i++) {
+            if (grid[i][ans] == 1) {
+                ans = i;
+            }
+        }
+        return ans;
+    }
+
+    private List<Integer>[] g;
+    private int[] ans, size;
+
+    public int[] sumOfDistancesInTree(int n, int[][] edges) {
+        g = new ArrayList[n];
+        Arrays.setAll(g, e -> new ArrayList<>());
+        for (int[] e : edges) {
+            int x = e[0], y = e[1];
+            g[x].add(y);
+            g[y].add(x);
+        }
+        ans = new int[n];
+        size = new int[n];
+        dfs(0, -1, 0);
+        reroot(0, -1);
+        return ans;
+    }
+
+    private void dfs(int x, int fa, int depth) {
+        ans[0] += depth;
+        size[x] = 1;
+        for (int y : g[x]) {
+            if (y != fa) {
+                dfs(y, x, depth + 1);
+                size[x] += size[y];
+            }
+        }
+    }
+
+    private void reroot(int x, int fa) {
+        for (int y : g[x]) {
+            if (y != fa) {
+                ans[y] = ans[x] + g.length - 2 * size[y];
+                reroot(y, x);
+            }
+        }
+    }
+
+    private int[] cache;
+
+    public int combinationSum4(int[] nums, int target) {
+        cache = new int[target + 1];
+        Arrays.fill(cache, -1);
+        int a = dfscombinationSum4(nums, target);
+        return Math.max(0, a);
+    }
+
+    private int dfscombinationSum4(int[] nums, int target) {
+        if (target == 0) {
+            return 1;
+        }
+        if (cache[target] != -1) {
+            return cache[target];
+        }
+        int res = 0;
+        for (int i : nums) {
+            if (target >= i) {
+                res += dfscombinationSum4(nums, target - i);
+            }
+        }
+        return cache[target] = res;
     }
 
 }

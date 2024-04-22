@@ -2,6 +2,7 @@ package com.leetcode.codereview.httpclient.my;
 
 import com.alibaba.excel.util.StringUtils;
 import com.leetcode.codereview.httpclient.my.bo.ConversationResponseBo;
+import com.leetcode.codereview.httpclient.my.bo.HumanOperatedTTResultDto;
 import com.leetcode.codereview.httpclient.my.bo.content.Content;
 import com.leetcode.codereview.httpclient.my.bo.content.ImageContent;
 import com.leetcode.codereview.httpclient.my.bo.content.LinkContent;
@@ -72,6 +73,21 @@ public class FridayHttpResponseUtil {
         conversationResponseBo.setRequestId(data.get("requestId").getTextValue());
         conversationResponseBo.setContents(contents);
         return conversationResponseBo;
+    }
+
+    public static HumanOperatedTTResultDto parseTTResult(JsonNode jsonNode) {
+        if (jsonNode == NullNode.instance||jsonNode==null) {
+            return null;
+        }
+        HumanOperatedTTResultDto humanOperatedTTResultDto = new HumanOperatedTTResultDto();
+
+        int code = jsonNode.get("code").getIntValue();
+        humanOperatedTTResultDto.setCode(Integer.toString(code));
+        String message = jsonNode.get("message").getTextValue();
+        humanOperatedTTResultDto.setMessage(message);
+        String ttId = jsonNode.get("data").getTextValue();
+        humanOperatedTTResultDto.setData(ttId);
+        return humanOperatedTTResultDto;
     }
 
 }

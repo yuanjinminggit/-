@@ -455,4 +455,36 @@ public class ZuiJinGongGongZuXian {
         }
     }
 
+    public int maximumCount(int[] nums) {
+        int a = 0;
+        int b = 0;
+        for (int num : nums) {
+            if (num > 0) {
+                a++;
+            }
+            if (num < 0) {
+                b++;
+            }
+        }
+        return Math.max(a, b);
+    }
+
+    public int findChampion(int n, int[][] edges) {
+        boolean[] isWeak = new boolean[n];
+        for (int[] e : edges) {
+            isWeak[e[1]] = true;
+        }
+        int ans = -1;
+        for (int i = 0; i < n; i++) {
+            if (isWeak[i]) {
+                continue;
+            }
+            if (ans != -1) {
+                return -1;
+            }
+            ans = i;
+        }
+        return ans;
+    }
+
 }
