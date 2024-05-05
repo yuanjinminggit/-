@@ -9,8 +9,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 public class ZuiJinGongGongZuXian {
@@ -483,6 +485,107 @@ public class ZuiJinGongGongZuXian {
                 return -1;
             }
             ans = i;
+        }
+        return ans;
+    }
+
+    private TreeNode startNode;
+    private final Map<TreeNode, TreeNode> fa = new HashMap<>();
+
+    public int amountOfTime(TreeNode root, int start) {
+        dfs(root, null, start);
+        return maxDepth(startNode, startNode);
+    }
+
+    private int maxDepth(TreeNode node, TreeNode from) {
+        if (node == null) {
+            return -1;
+        }
+        int res = -1;
+
+        if (node.left != from) {
+            res = Math.max(res, maxDepth(node.left, node));
+        }
+        if (node.right != from) {
+            res = Math.max(res, maxDepth(node.right, node));
+        }
+        if (fa.get(node) != from) {
+            res = Math.max(res, maxDepth(fa.get(node), node));
+        }
+        return res + 1;
+    }
+
+    private void dfs(TreeNode node, TreeNode from, int start) {
+        if (node == null) {
+            return;
+        }
+        fa.put(node, from);
+        if (node.val == start) {
+            startNode = node;
+        }
+        dfs(node.left, node, start);
+        dfs(node.right, node, start);
+    }
+
+    private int nodeId, size;
+
+    public int minMalwareSpread(int[][] graph, int[] initial) {
+        int n = graph.length;
+        boolean[] vis = new boolean[n];
+        boolean[] isInitial = new boolean[n];
+        int mn = Integer.MAX_VALUE;
+        for (int x : initial) {
+            isInitial[x] = true;
+            mn = Math.min(mn, x);
+        }
+        int ans = -1;
+        int maxSize = 0;
+        for (int x : initial) {
+            if (vis[x]) {
+                continue;
+            }
+            nodeId = -1;
+            size = 0;
+            dfs(x, graph, vis, isInitial);
+            if (nodeId >= 0 && (size > maxSize || size == maxSize && nodeId < ans)) {
+                ans = nodeId;
+                maxSize = size;
+            }
+        }
+        return ans < 0 ? mn : ans;
+    }
+
+    private void dfs(int x, int[][] graph, boolean[] vis, boolean[] isInitial) {
+        vis[x] = true;
+        size++;
+        if (nodeId != -2 && isInitial[x]) {
+            nodeId = nodeId == -1 ? x : -2;
+        }
+        for (int y = 0; y < graph[x].length; y++) {
+            if (graph[x][y] == 1 && !vis[y]) {
+                dfs(y, graph, vis, isInitial);
+            }
+        }
+    }
+
+    public int[] findOriginalArray(int[] changed) {
+        Arrays.sort(changed);
+        int[] ans = new int[changed.length / 2];
+        int ansIdx = 0;
+        HashMap<Integer, Integer> cnt = new HashMap<>();
+        for (int x : changed) {
+            if (!cnt.containsKey(x)) {
+                if (ansIdx == ans.length) {
+                    return new int[0];
+                }
+                ans[ansIdx++] = x;
+                cnt.merge(x * 2, 1, Integer::sum);
+            } else {
+                int c = cnt.merge(x, -1, Integer::sum);
+                if (c == 0) {
+                    cnt.remove(x);
+                }
+            }
         }
         return ans;
     }
