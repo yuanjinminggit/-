@@ -1,5 +1,6 @@
 package com.leetcode.codereview.tree;
 
+import com.alibaba.fastjson.JSON;
 import com.leetcode.codereview.simpleConstruct.Node;
 import com.leetcode.codereview.simpleConstruct.TreeNode;
 
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class ZuiJinGongGongZuXian {
@@ -373,15 +375,6 @@ public class ZuiJinGongGongZuXian {
         return ans;
     }
 
-    private boolean isPrime(int x) {
-        for (int i = 2; i * i <= x; ++i) {
-            if (x % 2 == 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public int countPrimes(int n) {
         int[] isPrime = new int[n];
         Arrays.fill(isPrime, 1);
@@ -588,6 +581,425 @@ public class ZuiJinGongGongZuXian {
             }
         }
         return ans;
+    }
+
+    public int garbageCollection(String[] garbage, int[] travel) {
+        HashMap<Character, Integer> distance = new HashMap<>();
+        int res = 0, curDis = 0;
+        for (int i = 0; i < garbage.length; i++) {
+            res += garbage[i].length();
+            if (i > 0) {
+                curDis += travel[i - 1];
+            }
+            for (char c : garbage[i].toCharArray()) {
+                distance.put(c, curDis);
+            }
+        }
+        return res + distance.values().stream().reduce(0, Integer::sum);
+    }
+
+    private static final int[][] DIRECTIONS = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}}; // 四方向
+
+    public int orangesRotting(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        int fresh = 0;
+        List<int[]> q = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    fresh++;
+                } else if (grid[i][j] == 2) {
+                    q.add(new int[]{i, j});
+                }
+            }
+        }
+        int ans = -1;
+        while (!q.isEmpty()) {
+            ans++;
+            List<int[]> tmp = q;
+            q = new ArrayList<>();
+            for (int[] pos : tmp) {
+                for (int[] d : DIRECTIONS) {
+                    int i = pos[0] + d[0];
+                    int j = pos[1] + d[1];
+                    if (i >= 0 && i < m && j >= 0 && j < n && grid[i][j] == 1) {
+                        fresh--;
+                        grid[i][j] = 2;
+                        q.add(new int[]{i, j});
+                    }
+                }
+            }
+        }
+        return fresh > 0 ? -1 : Math.max(ans, 0);
+    }
+
+    public int minimumRounds(int[] tasks) {
+        HashMap<Integer, Integer> cnt = new HashMap<>();
+        for (int t : tasks) {
+            cnt.merge(t, 1, Integer::sum);
+        }
+        int ans = 0;
+        for (Integer c : cnt.values()) {
+            if (c == 1) {
+                return -1;
+            }
+            ans += (c + 2) / 3;
+        }
+        return ans;
+    }
+
+    public long numberOfWeeks(int[] milestones) {
+        if (milestones.length == 1) {
+            return 1;
+        }
+        PriorityQueue<int[]> heap = new PriorityQueue<>((a, b) -> {
+            return b[1] - a[1];
+        });
+
+        for (int i = 0; i < milestones.length; i++) {
+            heap.offer(new int[]{i, milestones[i]});
+        }
+        int count = 0;
+        while (!heap.isEmpty()) {
+            int[] end = heap.poll();
+            int[] second = heap.poll();
+            if (end[1] - second[1] > 0) {
+                heap.offer(new int[]{end[0], end[1] - second[1]});
+            }
+            count += 2 * second[1];
+            if (heap.size() == 1) {
+                count++;
+                break;
+            }
+        }
+        return count;
+    }
+
+    public int maxProfitAssignment(int[] difficulty, int[] profit, int[] worker) {
+        int n = difficulty.length;
+        int[][] jobs = new int[n][2];
+        for (int i = 0; i < n; i++) {
+            jobs[i][0] = difficulty[i];
+            jobs[i][1] = profit[i];
+        }
+        Arrays.sort(jobs, (a, b) -> a[0] - b[0]);
+        Arrays.sort(worker);
+        int ans = 0, j = 0, maxProfit = 0;
+        for (int w : worker) {
+            while (j < n && jobs[j][0] <= w) {
+                maxProfit = Math.max(maxProfit, jobs[j++][1]);
+            }
+            ans += maxProfit;
+        }
+        return ans;
+    }
+
+    public int getWinner(int[] arr, int k) {
+        int mx = arr[0];
+        int win = 0;
+        for (int i = 0; i < arr.length && win < k; i++) {
+            if (arr[i] > mx) {
+                mx = arr[i];
+                win = 0;
+            }
+            win++;
+        }
+        return mx;
+    }
+
+    public int theMaximumAchievableX(int num, int t) {
+        return num + 2 * t;
+    }
+
+    public int maxDivScore(int[] nums, int[] divisors) {
+        int count = 0;
+        int max = 0;
+        int ans = 0;
+        for (int divisor : divisors) {
+            count = 0;
+            for (int num : nums) {
+                if (num % divisor == 0) {
+                    count++;
+                }
+            }
+            if (count == max) {
+                ans = ans == 0 ? divisor : Math.min(ans, divisor);
+            } else if (count > max) {
+                ans = divisor;
+                max = count;
+            }
+        }
+        return ans;
+    }
+
+    public List<Boolean> canMakePaliQueries(String s, int[][] queries) {
+        int n = s.length();
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            int bit = 1 << (s.charAt(i) - 'a');
+            sum[i + 1] = sum[i] ^ bit;
+        }
+        List<Boolean> ans = new ArrayList<>(queries.length);
+        for (int[] q : queries) {
+            int left = q[0], right = q[1], k = q[2];
+            int m = Integer.bitCount(sum[right + 1] ^ sum[left]);
+            ans.add(m / 2 <= k);
+        }
+        return ans;
+    }
+
+    public List<List<Integer>> findWinners(int[][] matches) {
+        HashMap<Integer, Integer> lossCount = new HashMap<>();
+        for (int[] m : matches) {
+            if (!lossCount.containsKey(m[0])) {
+                lossCount.put(m[0], 0);
+            }
+            lossCount.merge(m[1], 1, Integer::sum);
+        }
+        List<List<Integer>> ans = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            ans.add(new ArrayList<Integer>());
+        }
+        for (Map.Entry<Integer, Integer> entry : lossCount.entrySet()) {
+            Integer cnt = entry.getValue();
+            if (cnt < 2) {
+                ans.get(cnt).add(entry.getKey());
+            }
+        }
+        Collections.sort(ans.get(0));
+        Collections.sort(ans.get(1));
+        return ans;
+    }
+
+    public int[] findIndices1(int[] nums, int indexDifference, int valueDifference) {
+        int n = nums.length;
+        for (int i = 0; i < n - indexDifference; i++) {
+            for (int j = i + indexDifference; j < n; j++) {
+                if (Math.abs(nums[i] - nums[j]) >= valueDifference) {
+                    return new int[]{i, j};
+                }
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
+    public int[] findIndices(int[] nums, int indexDifference, int valueDifference) {
+        int minIndex = 0, maxIndex = 0;
+        for (int j = indexDifference; j < nums.length; j++) {
+            int i = j - indexDifference;
+            if (nums[i] < nums[minIndex]) {
+                minIndex = i;
+            }
+            if (nums[j] - nums[minIndex] >= valueDifference) {
+                return new int[]{minIndex, j};
+            }
+            if (nums[i] > nums[maxIndex]) {
+                maxIndex = i;
+            }
+            if (nums[maxIndex] - nums[j] >= valueDifference) {
+                return new int[]{maxIndex, j};
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
+    public static void main(String[] args) {
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put("MARKETING", 20);
+        map.put("MERCHANT_SALES", 30);
+        map.put("MALL", 20);
+        map.put("RISK_CONTROL", 20);
+        String jsonString = JSON.toJSONString(map);
+        System.out.println(jsonString);
+    }
+
+    public int paintWalls(int[] cost, int[] time) {
+        int n = cost.length;
+        int[][] memo = new int[n][2 * n + 1];
+        for (int[] row : memo) {
+            Arrays.fill(row, -1);
+        }
+        return dfs(n - 1, 0, cost, time, memo);
+    }
+
+    private int dfs(int i, int j, int[] cost, int[] time, int[][] memo) {
+        if (j > i) {
+            return 0;
+        }
+        if (i < 0) {
+            return Integer.MAX_VALUE / 2;
+        }
+        int k = j + memo.length;
+        if (memo[i][k] != -1) {
+            return memo[i][k];
+        }
+        int res1 = dfs(i - 1, j + time[i], cost, time, memo);
+        int res2 = dfs(i - 1, j - 1, cost, time, memo);
+        return memo[i][k] = Math.min(res1, res2);
+    }
+
+    private int[][] matrix;
+    private int m;
+    private int n;
+
+    private List<Integer> order;
+
+    public List<Integer> spiralOrder(int[][] matrix) {
+        this.matrix = matrix;
+        this.n = matrix.length;
+        this.m = matrix[0].length;
+        order = new ArrayList<>();
+        dfsSpiralOrder(0, 0, m, n);
+        return order;
+    }
+
+    private void dfsSpiralOrder(int x, int y, int m, int n) {
+        if (m == 0 || n == 0) {
+            return;
+        }
+        if (n == 1) {
+            for (int i = 0; i < m; i++) {
+                order.add(matrix[x][y + i]);
+            }
+            return;
+        }
+        if (m == 1) {
+            for (int i = 0; i < n; i++) {
+                order.add(matrix[x + i][y]);
+            }
+            return;
+        }
+        // 横者走
+        for (int i = 0; i < m; i++) {
+            order.add(matrix[x][y + i]);
+        }
+        // 竖着走
+        for (int i = 1; i < n; i++) {
+            order.add(matrix[x + i][y + m - 1]);
+        }
+        // 横着往回走
+        for (int i = 1; i < m; i++) {
+            order.add(matrix[x + n - 1][y + m - 1 - i]);
+        }
+        // 往上走
+        for (int i = 1; i < n - 1; i++) {
+            order.add(matrix[x + n - 1 - i][y]);
+        }
+        dfsSpiralOrder(x + 1, y + 1, m - 2, n - 2);
+    }
+
+    private static final int[][] DIRS = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
+
+    public boolean checkMove(char[][] board, int rMove, int cMove, char color) {
+        int m = board.length;
+        int n = board[0].length;
+        for (int[] dir : DIRS) {
+
+            int x = rMove + dir[0];
+            int y = cMove + dir[1];
+
+            if (x < 0 || x >= m || y < 0 || y >= n || board[x][y] != (color ^ 'B' ^ 'W')) {
+                continue;
+            }
+            while (true) {
+                x += dir[0];
+                y += dir[1];
+                if (x < 0 || x >= m || y < 0 || y >= n || board[x][y] == '.') {
+                    break;
+                }
+                if (board[x][y] == color) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public long countAlternatingSubarrays(int[] nums) {
+        long ans = 0;
+        int cnt = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (i > 0 && nums[i] != nums[i - 1]) {
+                cnt++;
+            } else {
+                cnt = 1;
+            }
+            ans += cnt;
+        }
+        return ans;
+    }
+
+    public int[][] modifiedMatrix(int[][] matrix) {
+        for (int j = 0; j < matrix[0].length; j++) {
+            int mx = 0;
+            for (int[] row : matrix) {
+                mx = Math.max(mx, row[j]);
+            }
+            for (int[] row : matrix) {
+                if (row[j] == -1) {
+                    row[j] = mx;
+                }
+            }
+        }
+        return matrix;
+    }
+
+    public int maximumPrimeDifference(int[] nums) {
+        int i = 0;
+        while (!isPrime(nums[i])) {
+            i++;
+        }
+        int j = nums.length - 1;
+        while (!isPrime(nums[j])) {
+            j--;
+        }
+        return j - i;
+
+    }
+
+    private boolean isPrime(int n) {
+        for (int i = 2; i * i <= n; i++) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return n >= 2;
+    }
+
+    List<Integer>[] match;
+    boolean[] vis;
+    int num;
+
+    public int countArrangement(int n) {
+        vis = new boolean[n + 1];
+        match = new List[n + 1];
+        for (int i = 0; i <= n; i++) {
+            match[i] = new ArrayList<Integer>();
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (i % j == 0 || j % i == 0) {
+                    match[i].add(j);
+                }
+            }
+        }
+        backtrack(1, n);
+        return num;
+    }
+
+    private void backtrack(int index, int n) {
+        if (index == n + 1) {
+            num++;
+            return;
+        }
+        for (Integer x : match[index]) {
+            if (!vis[x]) {
+                vis[x] = true;
+                backtrack(index + 1, n);
+                vis[x] = false;
+            }
+        }
     }
 
 }

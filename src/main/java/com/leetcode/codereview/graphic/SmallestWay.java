@@ -184,7 +184,6 @@ public class SmallestWay {
         return memo[k][i][j] = Math.min(dfs(k - 1, i, j, w), dfs(k - 1, i, k, w) + dfs(k - 1, k, j, w));
     }
 
-
     private int m;
     private int n;
 
@@ -213,7 +212,6 @@ public class SmallestWay {
         if (manToleft + res < fireToleft || mantoUp + res < firetoUp) return res;
         return res - 1;
     }
-
 
     private int[][] directions = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
     private int[][] grid;
@@ -277,7 +275,6 @@ public class SmallestWay {
         return res;
     }
 
-
     public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
         ArrayList<List<String>> res = new ArrayList<>();
         HashSet<String> dict = new HashSet<>(wordList);
@@ -312,7 +309,6 @@ public class SmallestWay {
                         }
                         dict.remove(nextWord);
                         queue.offer(nextWord);
-
 
                         from.putIfAbsent(nextWord, new ArrayList<>());
                         from.get(nextWord).add(curWord);
@@ -349,7 +345,6 @@ public class SmallestWay {
             path.removeFirst();
         }
     }
-
 
     public int ladderLength(String beginWord, String endWord, List<String> wordList) {
         HashSet<String> wordSet = new HashSet<>(wordList);
@@ -400,7 +395,6 @@ public class SmallestWay {
         return false;
     }
 
-
     public int calculateMinimumHP(int[][] dungeon) {
         if (dungeon == null || dungeon.length == 0 || dungeon[0].length == 0) {
             return 0;
@@ -446,7 +440,6 @@ public class SmallestWay {
         return cache[rowIndex][colIndex] = res;
     }
 
-
     public int hammingWeight(int n) {
         int ret = 0;
         for (int i = 0; i < 32; i++) {
@@ -482,7 +475,78 @@ public class SmallestWay {
         return -1;
     }
 
+    public int maximalPathQuality(int[] values, int[][] edges, int maxTime) {
+        int n = values.length;
+        List<int[]>[] g = new ArrayList[n];
+        Arrays.setAll(g, i -> new ArrayList<>());
+        for (int[] e : edges) {
+            int x = e[0];
+            int y = e[1];
+            int t = e[2];
+            g[x].add(new int[]{y, t});
+            g[y].add(new int[]{x, t});
+        }
+        boolean[] vis = new boolean[n];
+        vis[0] = true;
+        return dfs(0, 0, values[0], vis, g, values, maxTime);
+    }
 
+    private int dfs(int x, int sumTime, int sumValue, boolean[] vis, List<int[]>[] g, int[] values, int maxTime) {
+        int res = x == 0 ? sumValue : 0;
+        for (int[] e : g[x]) {
+            int y = e[0];
+            int t = e[1];
+            if (sumTime + t > maxTime) {
+                continue;
+            }
+            if (vis[y]) {
+                res = Math.max(res, dfs(y, sumTime + t, sumValue, vis, g, values, maxTime));
+            } else {
+                vis[y] = true;
+                res = Math.max(res, dfs(y, sumTime + t, sumValue + values[y], vis, g, values, maxTime));
+                vis[y] = false;
+            }
+        }
+        return res;
+    }
 
+    public String discountPrices(String sentence, int discount) {
+        double d = 1 - discount / 100.0;
+        String[] a = sentence.split(" ");
+        for (int i = 0; i < a.length; i++) {
+            if (check(a[i])) {
+                a[i] = String.format("$%.2f", Long.parseLong(a[i].substring(1)) * d);
+            }
+        }
+        return String.join(" ", a);
+    }
+
+    private boolean check(String s) {
+        if (s.length() == 1 || s.charAt(0) != '$') {
+            return false;
+        }
+        char[] charArray = s.toCharArray();
+        for (int i = 1; i < charArray.length; i++) {
+            if (!Character.isDigit(charArray[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public String smallestString(String S) {
+        char[] s = S.toCharArray();
+        int n = s.length;
+        for (int i = 0; i < n; i++) {
+            if (s[i] > 'a') {
+                for (; i < n && s[i] > 'a'; i++) {
+                    s[i]--;
+                }
+                return new String(s);
+            }
+        }
+        s[n - 1] = 'z';
+        return new String(s);
+    }
 
 }
